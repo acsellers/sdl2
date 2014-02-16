@@ -15,6 +15,8 @@ func NumCPU() int {
 //	return int(C.SDL_GetSystemRAM())
 //}
 
+// CPUInfo bundles together a bunch of SDL_Has* functions into
+// a single struct, then sets all the fields for you.
 type CPUInfo struct {
 	Cores int
 	// RamMB       int
