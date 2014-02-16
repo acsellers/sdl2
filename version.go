@@ -2,9 +2,11 @@ package sdl2
 
 // #cgo LDFLAGS: -lSDL2
 // #include <SDL2/SDL_version.h>
+// #include <SDL2/SDL_platform.h>
 import "C"
 
 var (
+	Platform string
 	Major    uint8
 	Minor    uint8
 	Patch    uint8
@@ -18,4 +20,7 @@ func init() {
 	Minor = uint8(sv.minor)
 	Patch = uint8(sv.patch)
 	Revision = int(C.SDL_GetRevisionNumber())
+
+	cstr := C.SDL_GetPlatform()
+	Platform = C.GoString(cstr)
 }

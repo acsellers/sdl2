@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	fmt.Printf("SDL Platform: %s\n", sdl2.Platform)
 	fmt.Printf("SDL Version: %d.%d.%d\n", sdl2.Major, sdl2.Minor, sdl2.Patch)
 	fmt.Printf("SDL Revision: %d\n", sdl2.Revision)
 }
