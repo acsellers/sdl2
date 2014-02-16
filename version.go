@@ -6,10 +6,16 @@ package sdl2
 import "C"
 
 var (
+	// Platform is the generic name of the current computer's OS,
+	// Ex: Linux. Windows
 	Platform string
-	Major    uint8
-	Minor    uint8
-	Patch    uint8
+	// Major verion of SDL, should be 2
+	Major uint8
+	// Minor version of SDL2
+	Minor uint8
+	// Patch level of SDL2
+	Patch uint8
+	// Revision is an incrementing number from SDL2's mercurial repository
 	Revision int
 )
 

@@ -10,14 +10,20 @@ import (
 	"unsafe"
 )
 
+// MessageBoxType will influence the window icon
 type MessageBoxType uint32
 
 const (
-	Error       MessageBoxType = 0x10
-	Warning     MessageBoxType = 0x20
+	// Error message
+	Error MessageBoxType = 0x10
+	// Warning message
+	Warning MessageBoxType = 0x20
+	// Information message
 	Information MessageBoxType = 0x40
 )
 
+// NewSimpleMessageBox will create a message box with a single "OK" button
+// with the title an message being passed.
 func NewSimpleMessageBox(t MessageBoxType, title, message string) error {
 	tstr := C.CString(title)
 	defer C.free(unsafe.Pointer(tstr))
@@ -32,6 +38,8 @@ func NewSimpleMessageBox(t MessageBoxType, title, message string) error {
 	return nil
 }
 
+// MessageBox instructs SDL to create a specified message box
+// with certain colors, messages and buttons.
 type MessageBox struct {
 	// Warning, Error, Information
 	MessageBoxType
@@ -44,14 +52,23 @@ type MessageBox struct {
 	Colors *MessageBoxColorScheme
 }
 
+// MessageButton is the definition for a button to be used.
 type MessageButton struct {
+	// Submit indicates that this button is the default button when the
+	// user just hits return
 	Submit bool
-	Quit   bool
-	Text   string
-	Click  func()
+	// Quit indicates the default action taken when the message box is
+	// closed
+	Quit bool
+	// Text of the button
+	Text string
+	// Click is the function that should be executed when the button is
+	// clicked
+	Click func()
 }
 
-// Color scheme to use for Messagebox
+// MessageBoxColorScheme is the colors that are to be used
+// when drawing the MessageBox.
 // Note that only R,G,B attributes are used
 type MessageBoxColorScheme struct {
 	Background       color.Color
@@ -81,6 +98,8 @@ func (mbcs *MessageBoxColorScheme) toNative() *C.SDL_MessageBoxColorScheme {
 	}
 }
 
+// Show displays the MessageBox, if an error is reported, then
+// a generic error will be returned.
 func (mb MessageBox) Show() error {
 	tstr := C.CString(mb.Title)
 	defer C.free(unsafe.Pointer(tstr))

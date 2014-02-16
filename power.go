@@ -9,7 +9,7 @@ import (
 	"unsafe"
 )
 
-// The basic state for a system's power supply
+// PowerInfo is the basic state for a system's power supply
 type PowerInfo struct {
 	PowerState
 	Remaining time.Duration
@@ -33,6 +33,7 @@ func (pi PowerInfo) String() string {
 	return "Unknown"
 }
 
+// Refresh reloads the data in the PowerInfo struct.
 func (pi *PowerInfo) Refresh() {
 	var remain int
 	pi.PowerState = PowerState(C.SDL_GetPowerInfo(
@@ -42,12 +43,18 @@ func (pi *PowerInfo) Refresh() {
 	pi.Remaining = time.Duration(remain) * time.Second
 }
 
+// PowerState is the state of the computer
 type PowerState C.SDL_PowerState
 
 const (
-	Unknown   PowerState = C.SDL_POWERSTATE_UNKNOWN
-	OnBattery            = C.SDL_POWERSTATE_ON_BATTERY
-	NoBattery            = C.SDL_POWERSTATE_NO_BATTERY
-	Charging             = C.SDL_POWERSTATE_CHARGING
-	Charged              = C.SDL_POWERSTATE_CHARGED
+	// Unknown indicates that SDL2 cannot determine the battery information
+	Unknown PowerState = C.SDL_POWERSTATE_UNKNOWN
+	// OnBattery indicates that the system is currently running on vatter power
+	OnBattery = C.SDL_POWERSTATE_ON_BATTERY
+	// NoBattery indicates that computer does not have a battery
+	NoBattery = C.SDL_POWERSTATE_NO_BATTERY
+	// Charging indicates that the computer is currently charging
+	Charging = C.SDL_POWERSTATE_CHARGING
+	// Charged indicates that the computer has a fully charged battery
+	Charged = C.SDL_POWERSTATE_CHARGED
 )
