@@ -16,6 +16,13 @@ type PowerInfo struct {
 	Percent   int
 }
 
+// String prints a human readable representation of the current
+// state, and either a remaining time or remaining percent based
+// on what the PowerState is recorded as.
+//
+//    p.String() // "Discharging: 74 Minutes Remaining"
+//    p.String() // "Charged"
+//    p.String() // "Unknown"
 func (pi PowerInfo) String() string {
 	switch pi.PowerState {
 	case OnBattery:
