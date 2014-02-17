@@ -5,7 +5,6 @@ package sdl2
 import "C"
 
 import (
-	"fmt"
 	"image/color"
 	"unsafe"
 )
@@ -32,7 +31,7 @@ func NewSimpleMessageBox(t MessageBoxType, title, message string) error {
 
 	e := C.SDL_ShowSimpleMessageBox(C.Uint32(t), tstr, mstr, nil)
 	if e == -1 {
-		return fmt.Errorf("couldn't open messagebox")
+		return GetError()
 	}
 
 	return nil
@@ -142,7 +141,7 @@ func (mb MessageBox) Show() error {
 	e := C.SDL_ShowMessageBox(&native, (*C.int)(unsafe.Pointer(&button)))
 
 	if e == -1 {
-		return fmt.Errorf("sdl messagebox error")
+		return GetError()
 	}
 	mb.Buttons[button].Click()
 
