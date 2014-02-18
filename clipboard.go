@@ -1,7 +1,7 @@
 package sdl2
 
 // #cgo LDFLAGS: -lSDL2
-// #include <SDL2/SDL_video.h>
+// #include <SDL2/SDL_clipboard.h>
 import "C"
 import "unsafe"
 

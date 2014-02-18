@@ -9,6 +9,19 @@ import (
 	"unsafe"
 )
 
+/*
+Unimplemented:
+WINDOWPOS_UNDEFINED
+WINDOWPOS_CENTERED
+
+WindowEvents
+GLAttr
+GLProfile
+GLContextFlag
+
+ClosestDisplayMode
+WindowDis
+*/
 type DisplayInfo struct {
 	Id           int
 	Name         string

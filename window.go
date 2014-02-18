@@ -208,6 +208,7 @@ func (w *Window) Maximize() {
 }
 
 // Minimize shrinks a window to an icon in the application list
+// Should come back using Restore, may not, I use Hide
 func (w *Window) Minimize() {
 	C.SDL_MinimizeWindow(w.Native)
 }
@@ -219,7 +220,7 @@ func (w *Window) Raise() {
 
 // Restore changes a Maximized window to its original size or un-minimizes the window
 func (w *Window) Restore() {
-	C.SDL_ResoreWindow(w.Native)
+	C.SDL_RestoreWindow(w.Native)
 }
 
 func (w *Window) Fullscreen() {}
