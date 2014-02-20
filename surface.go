@@ -5,7 +5,9 @@ package sdl2
 import "C"
 
 import (
+	"fmt"
 	"image"
+	"image/color"
 	"runtime"
 	"unsafe"
 )
@@ -16,10 +18,11 @@ type Surface struct {
 	Stride        int // SDL calls it pitch, but in go's image library it's stride
 	Pixels        []byte
 	clip          C.SDL_Rect
+	rle           bool
 }
 
 func NewSurfaceFromImage(i *image.RGBA) *Surface {
-	s := Surface{
+	s := &Surface{
 		Native: C.SDL_CreateRGBSurfaceFrom(
 			unsafe.Pointer(&i.Pix[0]),
 			C.int(i.Rect.Dx()),
@@ -34,8 +37,9 @@ func NewSurfaceFromImage(i *image.RGBA) *Surface {
 		Width:  i.Rect.Dx(),
 		Height: i.Rect.Dy(),
 	}
+	runtime.SetFinalizer(s, (*Surface).Free)
 
-	return &s
+	return s
 }
 
 // Use SDL's native function to save the surface
@@ -56,8 +60,46 @@ func (s *Surface) DisableFree() {
 	runtime.SetFinalizer(s, nil)
 }
 
-func (s Surface) Free() {
+func (s *Surface) Free() {
 	if s.Native != nil {
 		C.SDL_FreeSurface(s.Native)
 	}
+}
+
+func (s *Surface) LockPixels() {
+}
+
+func (s *Surface) UnlockPixels() {
+}
+
+// SetSurfaceRLE marks a surface to get accelerated blits, but the surface
+// have LockPixels called before the pixels can be edited. This is useful
+// when using a color key.
+func (s *Surface) SetSurfaceRLE() error {
+	if int(C.SDL_SetSurfaceRLE(s.Native, C.int(1))) != 0 {
+		return GetError()
+	}
+	s.rle = true
+	return nil
+}
+
+func (s *Surface) SetColorKey(key color.RGBA) {
+	p := C.SDL_MapRGB(s.Native.format, C.Uint8(key.R), C.Uint8(key.G), C.Uint8(key.B))
+	C.SDL_SetColorKey(s.Native, C.SDL_TRUE, p)
+}
+
+func (s *Surface) ColorKey() (color.RGBA, error) {
+	var c uint32
+	if C.SDL_GetColorKey(s.Native, (*C.Uint32)(unsafe.Pointer(&c))) != 0 {
+		return color.RGBA{}, GetError()
+	}
+
+	var r, g, b, a uint32
+	a = c >> 24
+	b = c >> 16
+	g = c >> 8
+	r = c
+	fmt.Println(c)
+
+	return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}, nil
 }

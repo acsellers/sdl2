@@ -241,7 +241,9 @@ func (w *Window) SetGrab(active bool) {
 	C.SDL_SetWindowGrab(w.Native, b)
 }
 
-func (w *Window) SetIcon() {}
+func (w *Window) SetIcon(s *Surface) {
+	C.SDL_SetWindowIcon(w.Native, s.Native)
+}
 
 func (w *Window) SetBordered(hasBorder bool) {
 	var b C.SDL_bool
