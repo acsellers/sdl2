@@ -5,11 +5,46 @@ package sdl2
 import "C"
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"runtime"
 	"unsafe"
+)
+
+type BlendMode uint32
+
+/* Unimplemented
+CreateRGBSurface (NewSurface)
+SetSurfacePalette
+GetClipRect
+SetClipRect
+ConvertSurface
+ConvertSurfaceFormat
+ConvertPixels
+FillRect
+FillRects
+UpperBlit
+SoftStretch
+UpperBlitScaled
+*/
+const (
+	// Blending equations are from SDL2 header files
+	//
+	// No blending
+	// dstRGBA = srcRGBA
+	None BlendMode = C.SDL_BLENDMODE_NONE
+	// Alpha Blending
+	// dstRGB = (srcRGB * srcA) + (dstRGB * (1-srcA))
+	// dstA = srcA + (dstA * (1-srcA))
+	Blend BlendMode = C.SDL_BLENDMODE_BLEND
+	// Additive Blending
+	// dstRGB = (srcRGB * srcA) + dstRGB
+	// dstA = dstA
+	Additive BlendMode = C.SDL_BLENDMODE_ADD
+	// Color Modulation
+	// dstRGB = srcRGB * dstRGB
+	// dstA = dstA
+	ColorModulation BlendMode = C.SDL_BLENDMODE_MOD
 )
 
 type Surface struct {
@@ -83,6 +118,8 @@ func (s *Surface) SetSurfaceRLE() error {
 	return nil
 }
 
+// SetColorKey sets the color that is to be regarded as transparent
+// by SDL2, note that the alpha channel is discarded.
 func (s *Surface) SetColorKey(key color.RGBA) {
 	p := C.SDL_MapRGB(s.Native.format, C.Uint8(key.R), C.Uint8(key.G), C.Uint8(key.B))
 	C.SDL_SetColorKey(s.Native, C.SDL_TRUE, p)
@@ -94,12 +131,49 @@ func (s *Surface) ColorKey() (color.RGBA, error) {
 		return color.RGBA{}, GetError()
 	}
 
-	var r, g, b, a uint32
-	a = c >> 24
-	b = c >> 16
-	g = c >> 8
-	r = c
-	fmt.Println(c)
+	var r, g, b C.Uint8
+	C.SDL_GetRGB(C.Uint32(c), s.Native.format, (*C.Uint8)(&r), (*C.Uint8)(&g), (*C.Uint8)(&b))
+	return color.RGBA{uint8(r), uint8(g), uint8(b), 0xff}, nil
+}
 
-	return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}, nil
+func (s *Surface) SetColorModifier(mod color.RGBA) error {
+	if C.SDL_SetSurfaceColorMod(s.Native, C.Uint8(mod.R), C.Uint8(mod.G), C.Uint8(mod.B)) != 0 {
+		return GetError()
+	}
+	return nil
+}
+
+func (s *Surface) ColorModifier() (color.RGBA, error) {
+	var r, g, b C.Uint8
+	if C.SDL_GetSurfaceColorMod(s.Native, (*C.Uint8)(&r), (*C.Uint8)(&g), (*C.Uint8)(&b)) != 0 {
+		return color.RGBA{}, GetError()
+	}
+	return color.RGBA{uint8(r), uint8(g), uint8(b), 0xff}, nil
+}
+
+// SetAlphaModifier is calculated as srcAlpha * ( modAlpha / 255 )
+func (s *Surface) SetAlphaModifier(a uint8) error {
+	if C.SDL_SetSurfaceAlphaMod(s.Native, C.Uint8(a)) != 0 {
+		return GetError()
+	}
+	return nil
+}
+func (s *Surface) AlphaModifier() (uint8, error) {
+	var a uint8
+	if C.SDL_GetSurfaceAlphaMod(s.Native, (*C.Uint8)(&a)) != 0 {
+		return 0, GetError()
+	}
+	return a, nil
+}
+
+func (s *Surface) BlendMode() BlendMode {
+	var bm C.SDL_BlendMode
+	C.SDL_GetSurfaceBlendMode(s.Native, &bm)
+	return BlendMode(bm)
+}
+func (s *Surface) SetBlendMode(bm BlendMode) error {
+	if C.SDL_SetSurfaceBlendMode(s.Native, C.SDL_BlendMode(bm)) != 0 {
+		return GetError()
+	}
+	return nil
 }
