@@ -15,9 +15,7 @@ WINDOWPOS_UNDEFINED
 WINDOWPOS_CENTERED
 
 WindowEvents
-GLAttr
-GLProfile
-GLContextFlag
+SDL_GL_*
 
 ClosestDisplayMode
 WindowDis
@@ -158,4 +156,34 @@ func getDisplayModes(i int) []DisplayMode {
 		}
 	}
 	return modes
+}
+
+/* Do later
+type GammaRamp struct {
+	Red   [256]uint16
+	Green [256]uint16
+	Blue  [256]uint16
+}
+
+func (w *Window) SetGammaRamp(gr GammaRamp) error {
+
+}
+*/
+
+// ScreenSaver returns whether screensavers are enabled.
+func ScreenSaver() bool {
+	if C.SDL_IsScreenSaverEnabled() == C.SDL_TRUE {
+		return true
+	}
+	return false
+}
+
+// SetScreenSaver sets whether the ScreenSaver is allowed to activate,
+// if the status is true, then screensavers can blank the screen, or vice versa.
+func SetScreenSaver(status bool) {
+	if status {
+		C.SDL_EnableScreenSaver()
+	} else {
+		C.SDL_DisableScreenSaver()
+	}
 }
