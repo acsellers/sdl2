@@ -17,3 +17,7 @@ func GetError() error {
 	}
 	return nil
 }
+
+func Quit() {
+	C.SDL_Quit()
+}

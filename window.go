@@ -3,7 +3,10 @@ package sdl2
 // #cgo LDFLAGS: -lSDL2
 // #include <SDL2/SDL_video.h>
 import "C"
-import "unsafe"
+import (
+	"runtime"
+	"unsafe"
+)
 
 type Window struct {
 	Native *C.SDL_Window
@@ -11,8 +14,6 @@ type Window struct {
 
 /*
 Unimplemented:
-GetWindowSurface
-UpdateWindowSurface
 UpdateWindowSurfaceRects
 
 GL_LoadLibrary
@@ -304,4 +305,29 @@ func (w *Window) PixelFormat() (PixelFormat, error) {
 		return pf, GetError()
 	}
 	return pf, nil
+}
+
+// Surface returns a surface that may be blitted to in
+// order to draw to the windows back buffer. Note that
+// this surface is not compatible with OpenGL or the
+// Rendering API, only for existing software rendering
+// code.
+func (w *Window) Surface() *Surface {
+	ns := C.SDL_GetWindowSurface(w.Native)
+	s := &Surface{
+		Native: ns,
+		Width:  int(ns.w),
+		Height: int(ns.h),
+	}
+	runtime.SetFinalizer(s, (*Surface).Free)
+	return s
+}
+
+// FlipSurface takes the window's Surface and shows the
+// content in the window.
+func (w *Window) FlipSurface() error {
+	if C.SDL_UpdateWindowSurface(w.Native) != 0 {
+		return GetError()
+	}
+	return nil
 }
