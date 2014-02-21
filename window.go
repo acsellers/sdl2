@@ -12,18 +12,11 @@ type Window struct {
 /*
 Unimplemented:
 WindowPixelFormat
-SetWindowIcon
-SetWindowFullscreen
 GetWindowSurface
 UpdateWindowSurface
 UpdateWindowSurfaceRects
-SetWindowBrightness
-GetWindowBrightness
 SetWindowGammaRamp
 GetWindowGammaRamp
-IsScreenSaverEnabled
-EnableScreenSaver
-DisableScreenSaver
 
 GL_LoadLibrary
 GL_GetProcAddress
@@ -223,22 +216,26 @@ func (w *Window) Restore() {
 	C.SDL_RestoreWindow(w.Native)
 }
 
-func (w *Window) Fullscreen() {}
+type FullscreenMode byte
 
-func (w *Window) Grab() bool {
-	b := C.SDL_GetWindowGrab(w.Native)
-	if b == C.SDL_TRUE {
-		return true
-	}
-	return false
-}
+const (
+	Windowed FullscreenMode = iota
+	Fullscreen
+	FullscreenDesktop
+)
 
-func (w *Window) SetGrab(active bool) {
-	var b C.SDL_bool
-	if active {
-		b = C.SDL_TRUE
+func (w *Window) Fullscreen(fm FullscreenMode) error {
+	var m C.Uint32
+	switch fm {
+	case Fullscreen:
+		m = C.SDL_WINDOW_FULLSCREEN
+	case FullscreenDesktop:
+		m = C.SDL_WINDOW_FULLSCREEN_DESKTOP
 	}
-	C.SDL_SetWindowGrab(w.Native, b)
+	if C.SDL_SetWindowFullscreen(w.Native, m) != 0 {
+		return GetError()
+	}
+	return nil
 }
 
 func (w *Window) SetIcon(s *Surface) {
@@ -252,3 +249,41 @@ func (w *Window) SetBordered(hasBorder bool) {
 	}
 	C.SDL_SetWindowBordered(w.Native, b)
 }
+
+func (w *Window) SetGrab(g bool) {
+	if g {
+		C.SDL_SetWindowGrab(w.Native, C.SDL_TRUE)
+	} else {
+		C.SDL_SetWindowGrab(w.Native, C.SDL_FALSE)
+	}
+}
+
+func (w *Window) Grab() bool {
+	if C.SDL_GetWindowGrab(w.Native) == C.SDL_TRUE {
+		return true
+	}
+	return false
+}
+
+func (w *Window) Brightness() float32 {
+	return float32(C.SDL_GetWindowBrightness(w.Native))
+}
+
+func (w *Window) SetBrightness(b float32) error {
+	if C.SDL_SetWindowBrightness(w.Native, C.float(b)) != 0 {
+		return GetError()
+	}
+	return nil
+}
+
+/* Do later
+type GammaRamp struct {
+	Red   [256]uint16
+	Green [256]uint16
+	Blue  [256]uint16
+}
+
+func (w *Window) SetGammaRamp(gr GammaRamp) error {
+
+}
+*/

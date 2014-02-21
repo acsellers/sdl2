@@ -54,8 +54,8 @@ func (pi *PowerInfo) Refresh() {
 type PowerState C.SDL_PowerState
 
 const (
-	// Unknown indicates that SDL2 cannot determine the battery information
-	Unknown PowerState = C.SDL_POWERSTATE_UNKNOWN
+	// NotAvailable indicates that SDL2 cannot determine the battery information
+	NotAvailable PowerState = C.SDL_POWERSTATE_UNKNOWN
 	// OnBattery indicates that the system is currently running on vatter power
 	OnBattery = C.SDL_POWERSTATE_ON_BATTERY
 	// NoBattery indicates that computer does not have a battery

@@ -15,10 +15,8 @@ WINDOWPOS_UNDEFINED
 WINDOWPOS_CENTERED
 
 WindowEvents
-SDL_GL_*
 
 ClosestDisplayMode
-WindowDis
 */
 type DisplayInfo struct {
 	Id           int
@@ -41,8 +39,6 @@ type DisplayMode struct {
 func (dm DisplayMode) String() string {
 	return fmt.Sprintf("%dx%d@%dHz", dm.Width, dm.Height, dm.RefreshRate)
 }
-
-type PixelFormat uint32
 
 func GetVideoDrivers() []string {
 	n := int(C.SDL_GetNumVideoDrivers())
@@ -157,18 +153,6 @@ func getDisplayModes(i int) []DisplayMode {
 	}
 	return modes
 }
-
-/* Do later
-type GammaRamp struct {
-	Red   [256]uint16
-	Green [256]uint16
-	Blue  [256]uint16
-}
-
-func (w *Window) SetGammaRamp(gr GammaRamp) error {
-
-}
-*/
 
 // ScreenSaver returns whether screensavers are enabled.
 func ScreenSaver() bool {
