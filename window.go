@@ -11,12 +11,9 @@ type Window struct {
 
 /*
 Unimplemented:
-WindowPixelFormat
 GetWindowSurface
 UpdateWindowSurface
 UpdateWindowSurfaceRects
-SetWindowGammaRamp
-GetWindowGammaRamp
 
 GL_LoadLibrary
 GL_GetProcAddress
@@ -276,14 +273,35 @@ func (w *Window) SetBrightness(b float32) error {
 	return nil
 }
 
-/* Do later
-type GammaRamp struct {
-	Red   [256]uint16
-	Green [256]uint16
-	Blue  [256]uint16
+func (w *Window) SetGammaRamp(r, g, b [256]uint16) error {
+	s := C.SDL_SetWindowGammaRamp(w.Native,
+		(*C.Uint16)(&r[0]),
+		(*C.Uint16)(&g[0]),
+		(*C.Uint16)(&b[0]),
+	)
+	if s != 0 {
+		return GetError()
+	}
+	return nil
 }
 
-func (w *Window) SetGammaRamp(gr GammaRamp) error {
-
+func (w *Window) GammaRamp() (r, g, b [256]uint16, err error) {
+	s := C.SDL_GetWindowGammaRamp(
+		w.Native,
+		(*C.Uint16)(&r[0]),
+		(*C.Uint16)(&g[0]),
+		(*C.Uint16)(&b[0]),
+	)
+	if s != 0 {
+		err = GetError()
+	}
+	return
 }
-*/
+
+func (w *Window) PixelFormat() (PixelFormat, error) {
+	pf := PixelFormat(C.SDL_GetWindowPixelFormat(w.Native))
+	if pf == Unknown {
+		return pf, GetError()
+	}
+	return pf, nil
+}
