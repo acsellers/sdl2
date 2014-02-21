@@ -10,11 +10,6 @@ import (
 	"unsafe"
 )
 
-/*
-Unimplemented:
-SDL_Palette
-*/
-
 type PixelFormat uint32
 
 const (
