@@ -1,0 +1,60 @@
+Status of subsystems
+
+Complete:
+  SDL_messagebox
+  SDL_power
+  SDL_version
+  SDL_revision
+  SDL_platform
+  SDL_cpuinfo
+  SDL_clipboard
+  SDL_error
+  SDL_blendmode
+  SDL_pixel
+  SDL_main
+  SDL_quit
+
+In Progress:
+  SDL_surface [blit, convert]
+  SDL_video (window) [update_surface_rect]
+  SDL_video (driver) [WINDOWPOS, Events, ClosestDisplayMode]
+  SDL_mouse [bottom half of header]
+
+To Start:
+  SDL_rect
+  SDL_mixer
+  SDL_audio
+  SDL_keyboard
+  SDL_keycode
+  SDL_scancode
+  SDL_gamecontroller
+  SDL_joystick
+  SDL_haptic
+  SDL_render
+  SDL_events
+  SDL_config
+  SDL_hints
+
+Low Priority:
+  SDL_loadso
+  SDL_syswm
+  SDL_touch
+  SDL_gesture
+
+Unknown:
+  SDL_atomic (see sync/atomic)
+  SDL_mutex (see sync)
+  SDL_bits (use?)
+  SDL_endian (see encoding/binary.Read)
+  SDL_rwops (see os, gob, encoding/binary)
+  SDL_shape (what is the purpose?)
+  SDL_opengl (see github.com/go-gl/gl)
+  SDL_opengles (worry about later)
+  SDL_opengles2 (worry about later)
+  SDL_name (internal?)
+  SDL_stdinc (internal things for SDL, should not be visible)
+  SDL_log (see log, or your own)
+  SDL_timer (see time.Timer)
+  SDL_thread (goroutines?)
+  SDL_types (deprecated/empty)
+  SDL_assert (use?)
