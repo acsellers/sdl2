@@ -6,13 +6,22 @@ About:
 Instead of just generating a wrapper library that wraps most of the SDL functions,
 this library will go a step further and build an interface to SDL that is idiomatic
 Go and fully documented. Use github.com/go-gl/gl for the gl library, as that's what
-this library is tested with.
+this library will be tested to work with.
+
+For example, in accordance with Effective Go (http://golang.org/doc/effective_go.html#Getters), 
+getting attributes from SDL2 like Window Titles is done using the Title() function.
+Setting a title involves the SetTitle function. Also all constants have their own type, and
+are written in mixed caps. Channels will be provided for receiving events, and easily
+confused multiple returns will have named returns. When reasonable, code will return
+go stdlib stucts instead of creating similar structs in the sdl2 package. For instance,
+color functions will return a color.RGBA struct instead of a sdl2.RGBA struct. Surface
+creation functions can take an image.RGBA instead of a [] byte for the pixels.
 
 Contributing:
-Use goimports before submitting any new code. Use golint to check for issues, but
-use your judgement on any issues it brings up. New functionality should be accompanied
-by new documentation, new Example* functions and new examples programs or adding new
-functionality to an existing example program.
+Use goimports (instead of go fmt) before submitting any new code. Use golint to check
+for issues, but use your judgement on any issues it brings up. New functionality
+should be accompanied by new documentation, new Example* functions and new examples
+programs or adding new functionality to an existing example program.
 
 Get goimports from code.google.com/p/go.tools/cmd/goimports
 
