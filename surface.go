@@ -177,3 +177,76 @@ func (s *Surface) SetBlendMode(bm BlendMode) error {
 	}
 	return nil
 }
+
+func (s *Surface) Blit(d *Surface, dst image.Point) (image.Rectangle, error) {
+	dr := C.SDL_Rect{x: C.int(dst.X), y: C.int(dst.Y)}
+	r := C.SDL_BlitSurface(s.Native, nil, d.Native, &dr)
+	if r != 0 {
+		return image.Rectangle{}, GetError()
+	}
+	return image.Rect(int(dr.x), int(dr.y), int(dr.x+dr.w), int(dr.y+dr.h)), nil
+}
+
+func (s *Surface) BlitSubset(d *Surface, dst image.Point, subset image.Rectangle) (image.Rectangle, error) {
+	dr := C.SDL_Rect{x: C.int(dst.X), y: C.int(dst.Y)}
+	r := C.SDL_BlitSurface(
+		s.Native,
+		&C.SDL_Rect{
+			x: C.int(subset.Min.X),
+			y: C.int(subset.Min.Y),
+			w: C.int(subset.Dx()),
+			h: C.int(subset.Dy()),
+		},
+		d.Native,
+		&dr,
+	)
+	if r != 0 {
+		return image.Rectangle{}, GetError()
+	}
+	return image.Rect(int(dr.x), int(dr.y), int(dr.x+dr.w), int(dr.y+dr.h)), nil
+}
+
+func (s *Surface) BlitScaled(d *Surface, dst image.Rectangle) (image.Rectangle, error) {
+	dr := C.SDL_Rect{
+		x: C.int(dst.Min.X),
+		y: C.int(dst.Min.Y),
+		w: C.int(dst.Dx()),
+		h: C.int(dst.Dy()),
+	}
+	r := C.SDL_BlitSurface(
+		s.Native,
+		nil,
+		d.Native,
+		&dr,
+	)
+	if r != 0 {
+		return image.Rectangle{}, GetError()
+	}
+	return image.Rect(int(dr.x), int(dr.y), int(dr.x+dr.w), int(dr.y+dr.h)), nil
+}
+
+func (s *Surface) BlitScaledSubset(d *Surface, dst, subset image.Rectangle) (image.Rectangle, error) {
+	dr := C.SDL_Rect{
+		x: C.int(dst.Min.X),
+		y: C.int(dst.Min.Y),
+		w: C.int(dst.Dx()),
+		h: C.int(dst.Dy()),
+	}
+
+	r := C.SDL_BlitSurface(
+		s.Native,
+		&C.SDL_Rect{
+			x: C.int(subset.Min.X),
+			y: C.int(subset.Min.Y),
+			w: C.int(subset.Dx()),
+			h: C.int(subset.Dy()),
+		},
+		d.Native,
+		&dr,
+	)
+	if r != 0 {
+		return image.Rectangle{}, GetError()
+	}
+	return image.Rect(int(dr.x), int(dr.y), int(dr.x+dr.w), int(dr.y+dr.h)), nil
+
+}

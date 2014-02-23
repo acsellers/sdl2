@@ -87,8 +87,8 @@ func RelativeMode() bool {
 }
 
 func CursorVisibility() bool {
-	r := C.SDL_ShowCursor(C.SDL_QUERY)
-	if r == SDL_TRUE {
+	r := C.SDL_ShowCursor(-1)
+	if r == C.SDL_TRUE {
 		return true
 	}
 	return false
