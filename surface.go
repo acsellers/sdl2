@@ -23,9 +23,7 @@ ConvertSurfaceFormat
 ConvertPixels
 FillRect
 FillRects
-UpperBlit
 SoftStretch
-UpperBlitScaled
 */
 const (
 	// Blending equations are from SDL2 header files

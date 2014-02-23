@@ -13,15 +13,15 @@ Complete:
   SDL_pixel
   SDL_main
   SDL_quit
+  SDL_mouse
+  SDL_rect
 
 In Progress:
-  SDL_surface [blit, convert]
+  SDL_surface [clip, convert, fill, stretch]
   SDL_video (window) [update_surface_rect]
   SDL_video (driver) [WINDOWPOS, Events, ClosestDisplayMode]
-  SDL_mouse [bottom half of header]
 
 To Start:
-  SDL_rect
   SDL_mixer
   SDL_audio
   SDL_keyboard
