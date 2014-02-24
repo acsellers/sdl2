@@ -1,6 +1,11 @@
 sdl2 interface for Go
 
-This library is very unfinished at the moment and not at all useful.
+This library is very unfinished at the moment and starting to be
+more useful.
+
+Note that I am not a developer on the SDL2 library, I'm just
+writing a wrapper around the C interface they provide so I and
+anyone using this go package can use their library.
 
 About:
 Instead of just generating a wrapper library that wraps most of the SDL functions,
