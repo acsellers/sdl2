@@ -17,9 +17,9 @@ Complete:
   SDL_rect
   SDL_scancode
   SDL_keycode
+  SDL_keyboard
 
 In Progress:
-  SDL_keyboard [everything but current focus]
   SDL_surface [clip, convert, fill, stretch]
   SDL_video (window) [update_surface_rect]
   SDL_video (driver) [WINDOWPOS, Events, ClosestDisplayMode]

@@ -2,6 +2,7 @@ package sdl2
 
 // #cgo LDFLAGS: -lSDL2
 // #include <SDL2/SDL_video.h>
+// #include <SDL2/SDL_keyboard.h>
 import "C"
 import (
 	"runtime"
