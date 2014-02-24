@@ -26,3 +26,8 @@ programs or adding new functionality to an existing example program.
 Get goimports from code.google.com/p/go.tools/cmd/goimports
 
 Get golint from github.com/golang/lint
+
+License:
+Available under the BSD 2-Clause (LICENSE.bsd) or zlib (LICENSE.zlib). The main 
+difference between the licenses is that the BSD requires the copyright text be
+included with binary versions while the zlib does not have the same requirement.
