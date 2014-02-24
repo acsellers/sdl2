@@ -2,9 +2,25 @@ package sdl2
 
 // #cgo LDFLAGS: -lSDL2
 // #include <SDL2/SDL_keycode.h>
+// #include <SDL2/SDL_keyboard.h>
 import "C"
+import "unsafe"
 
 type Keycode rune
+
+func NewKeycodeFromName(name string) Keycode {
+	cstr := C.CString(name)
+	defer C.free(unsafe.Pointer(cstr))
+	return Keycode(C.SDL_GetKeyFromName(cstr))
+}
+
+func (kc Keycode) Scancode() Scancode {
+	return Scancode(C.SDL_GetScancodeFromKey(C.SDL_Keycode(kc)))
+}
+
+func (kc Keycode) String() string {
+	return C.GoString(C.SDL_GetKeyName(C.SDL_Keycode(kc)))
+}
 
 const (
 	KeyUnknown  Keycode = C.SDLK_UNKNOWN

@@ -23,9 +23,7 @@ GL_ExtensionSupported
 GL_SetAttribute
 GL_GetAttribute
 GL_CreateContext
-GL_MakeCurrent
-GL_GetCurrentWindow
-GL_GetCurrentContext
+GL_MakeCurrent GL_GetCurrentWindow GL_GetCurrentContext
 GL_SetSwapInterval
 GL_GetSwapInterval
 GL_SwapWindow
@@ -330,4 +328,8 @@ func (w *Window) FlipSurface() error {
 		return GetError()
 	}
 	return nil
+}
+
+func (w *Window) OnscreenKeyboardShown() bool {
+	return C.SDL_IsScreenKeyboardShown(w.Native) == C.SDL_TRUE
 }

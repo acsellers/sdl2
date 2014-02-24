@@ -2,62 +2,78 @@ package sdl2
 
 // #cgo LDFLAGS: -lSDL2
 // #include <SDL2/SDL_scancode.h>
+// #include <SDL2/SDL_keyboard.h>
 import "C"
+import "unsafe"
 
-type ScanCode uint32
+type Scancode int
+
+func NewScancodeFromName(name string) Scancode {
+	cstr := C.CString(name)
+	defer C.free(unsafe.Pointer(cstr))
+	return Scancode(C.SDL_GetScancodeFromName(cstr))
+}
+
+func (sc Scancode) Key() Keycode {
+	return Keycode(C.SDL_GetKeyFromScancode(C.SDL_Scancode(sc)))
+}
+
+func (sc Scancode) String() string {
+	return C.GoString(C.SDL_GetScancodeName(C.SDL_Scancode(sc)))
+}
 
 // Scan codes from SDL_scancode, some comments reformatted
 // to match standard Go comments.
 const (
-	ScanUnknown ScanCode = C.SDL_SCANCODE_UNKNOWN
-	ScanA       ScanCode = C.SDL_SCANCODE_A
-	ScanB       ScanCode = C.SDL_SCANCODE_B
-	ScanC       ScanCode = C.SDL_SCANCODE_C
-	ScanD       ScanCode = C.SDL_SCANCODE_D
-	ScanE       ScanCode = C.SDL_SCANCODE_E
-	ScanF       ScanCode = C.SDL_SCANCODE_F
-	ScanG       ScanCode = C.SDL_SCANCODE_G
-	ScanH       ScanCode = C.SDL_SCANCODE_H
-	ScanI       ScanCode = C.SDL_SCANCODE_I
-	ScanJ       ScanCode = C.SDL_SCANCODE_J
-	ScanK       ScanCode = C.SDL_SCANCODE_K
-	ScanL       ScanCode = C.SDL_SCANCODE_L
-	ScanM       ScanCode = C.SDL_SCANCODE_M
-	ScanN       ScanCode = C.SDL_SCANCODE_N
-	ScanO       ScanCode = C.SDL_SCANCODE_O
-	ScanP       ScanCode = C.SDL_SCANCODE_P
-	ScanQ       ScanCode = C.SDL_SCANCODE_Q
-	ScanR       ScanCode = C.SDL_SCANCODE_R
-	ScanS       ScanCode = C.SDL_SCANCODE_S
-	ScanT       ScanCode = C.SDL_SCANCODE_T
-	ScanU       ScanCode = C.SDL_SCANCODE_U
-	ScanV       ScanCode = C.SDL_SCANCODE_V
-	ScanW       ScanCode = C.SDL_SCANCODE_W
-	ScanX       ScanCode = C.SDL_SCANCODE_X
-	ScanY       ScanCode = C.SDL_SCANCODE_Y
-	ScanZ       ScanCode = C.SDL_SCANCODE_Z
+	ScanUnknown Scancode = C.SDL_SCANCODE_UNKNOWN
+	ScanA       Scancode = C.SDL_SCANCODE_A
+	ScanB       Scancode = C.SDL_SCANCODE_B
+	ScanC       Scancode = C.SDL_SCANCODE_C
+	ScanD       Scancode = C.SDL_SCANCODE_D
+	ScanE       Scancode = C.SDL_SCANCODE_E
+	ScanF       Scancode = C.SDL_SCANCODE_F
+	ScanG       Scancode = C.SDL_SCANCODE_G
+	ScanH       Scancode = C.SDL_SCANCODE_H
+	ScanI       Scancode = C.SDL_SCANCODE_I
+	ScanJ       Scancode = C.SDL_SCANCODE_J
+	ScanK       Scancode = C.SDL_SCANCODE_K
+	ScanL       Scancode = C.SDL_SCANCODE_L
+	ScanM       Scancode = C.SDL_SCANCODE_M
+	ScanN       Scancode = C.SDL_SCANCODE_N
+	ScanO       Scancode = C.SDL_SCANCODE_O
+	ScanP       Scancode = C.SDL_SCANCODE_P
+	ScanQ       Scancode = C.SDL_SCANCODE_Q
+	ScanR       Scancode = C.SDL_SCANCODE_R
+	ScanS       Scancode = C.SDL_SCANCODE_S
+	ScanT       Scancode = C.SDL_SCANCODE_T
+	ScanU       Scancode = C.SDL_SCANCODE_U
+	ScanV       Scancode = C.SDL_SCANCODE_V
+	ScanW       Scancode = C.SDL_SCANCODE_W
+	ScanX       Scancode = C.SDL_SCANCODE_X
+	ScanY       Scancode = C.SDL_SCANCODE_Y
+	ScanZ       Scancode = C.SDL_SCANCODE_Z
 
-	Scan1 ScanCode = C.SDL_SCANCODE_1
-	Scan2 ScanCode = C.SDL_SCANCODE_2
-	Scan3 ScanCode = C.SDL_SCANCODE_3
-	Scan4 ScanCode = C.SDL_SCANCODE_4
-	Scan5 ScanCode = C.SDL_SCANCODE_5
-	Scan6 ScanCode = C.SDL_SCANCODE_6
-	Scan7 ScanCode = C.SDL_SCANCODE_7
-	Scan8 ScanCode = C.SDL_SCANCODE_8
-	Scan9 ScanCode = C.SDL_SCANCODE_9
-	Scan0 ScanCode = C.SDL_SCANCODE_0
+	Scan1 Scancode = C.SDL_SCANCODE_1
+	Scan2 Scancode = C.SDL_SCANCODE_2
+	Scan3 Scancode = C.SDL_SCANCODE_3
+	Scan4 Scancode = C.SDL_SCANCODE_4
+	Scan5 Scancode = C.SDL_SCANCODE_5
+	Scan6 Scancode = C.SDL_SCANCODE_6
+	Scan7 Scancode = C.SDL_SCANCODE_7
+	Scan8 Scancode = C.SDL_SCANCODE_8
+	Scan9 Scancode = C.SDL_SCANCODE_9
+	Scan0 Scancode = C.SDL_SCANCODE_0
 
-	ScanReturn    ScanCode = C.SDL_SCANCODE_RETURN
-	ScanEscape    ScanCode = C.SDL_SCANCODE_ESCAPE
-	ScanBackspace ScanCode = C.SDL_SCANCODE_BACKSPACE
-	ScanTab       ScanCode = C.SDL_SCANCODE_TAB
-	ScanSpace     ScanCode = C.SDL_SCANCODE_SPACE
+	ScanReturn    Scancode = C.SDL_SCANCODE_RETURN
+	ScanEscape    Scancode = C.SDL_SCANCODE_ESCAPE
+	ScanBackspace Scancode = C.SDL_SCANCODE_BACKSPACE
+	ScanTab       Scancode = C.SDL_SCANCODE_TAB
+	ScanSpace     Scancode = C.SDL_SCANCODE_SPACE
 
-	ScanMinus        ScanCode = C.SDL_SCANCODE_MINUS
-	ScanEquals       ScanCode = C.SDL_SCANCODE_EQUALS
-	ScanLeftBracket  ScanCode = C.SDL_SCANCODE_LEFTBRACKET
-	ScanRightBracket ScanCode = C.SDL_SCANCODE_RIGHTBRACKET
+	ScanMinus        Scancode = C.SDL_SCANCODE_MINUS
+	ScanEquals       Scancode = C.SDL_SCANCODE_EQUALS
+	ScanLeftBracket  Scancode = C.SDL_SCANCODE_LEFTBRACKET
+	ScanRightBracket Scancode = C.SDL_SCANCODE_RIGHTBRACKET
 
 	/*
 	   Located at the lower left of the return
@@ -74,7 +90,7 @@ const (
 	   layout, and ASTERISK and MICRO SIGN in a
 	   French Windows layout.
 	*/
-	ScanBackslash ScanCode = C.SDL_SCANCODE_BACKSLASH
+	ScanBackslash Scancode = C.SDL_SCANCODE_BACKSLASH
 	/*
 	   ISO USB keyboards actually use this code
 	   instead of 49 for the same key, but all
@@ -88,9 +104,9 @@ const (
 	   will never generate it with most (all?)
 	   keyboards.
 	*/
-	ScanNonUSHash  ScanCode = C.SDL_SCANCODE_NONUSHASH
-	ScanSemicolon  ScanCode = C.SDL_SCANCODE_SEMICOLON
-	ScanApostrophe ScanCode = C.SDL_SCANCODE_APOSTROPHE
+	ScanNonUSHash  Scancode = C.SDL_SCANCODE_NONUSHASH
+	ScanSemicolon  Scancode = C.SDL_SCANCODE_SEMICOLON
+	ScanApostrophe Scancode = C.SDL_SCANCODE_APOSTROPHE
 	/*
 	   Located in the top left corner (on both ANSI
 	   and ISO keyboards). Produces GRAVE ACCENT and
@@ -109,59 +125,59 @@ const (
 	   SIGN in a Swiss German, German, or French Mac
 	   layout on ANSI keyboards.
 	*/
-	ScanGrave  ScanCode = C.SDL_SCANCODE_GRAVE
-	ScanComma  ScanCode = C.SDL_SCANCODE_COMMA
-	ScanPeriod ScanCode = C.SDL_SCANCODE_PERIOD
-	ScanSlash  ScanCode = C.SDL_SCANCODE_SLASH
+	ScanGrave  Scancode = C.SDL_SCANCODE_GRAVE
+	ScanComma  Scancode = C.SDL_SCANCODE_COMMA
+	ScanPeriod Scancode = C.SDL_SCANCODE_PERIOD
+	ScanSlash  Scancode = C.SDL_SCANCODE_SLASH
 
-	ScanCapsLock ScanCode = C.SDL_SCANCODE_CAPSLOCK
+	ScanCapsLock Scancode = C.SDL_SCANCODE_CAPSLOCK
 
-	ScanF1  ScanCode = C.SDL_SCANCODE_F1
-	ScanF2  ScanCode = C.SDL_SCANCODE_F2
-	ScanF3  ScanCode = C.SDL_SCANCODE_F3
-	ScanF4  ScanCode = C.SDL_SCANCODE_F4
-	ScanF5  ScanCode = C.SDL_SCANCODE_F5
-	ScanF6  ScanCode = C.SDL_SCANCODE_F6
-	ScanF7  ScanCode = C.SDL_SCANCODE_F7
-	ScanF8  ScanCode = C.SDL_SCANCODE_F8
-	ScanF9  ScanCode = C.SDL_SCANCODE_F9
-	ScanF10 ScanCode = C.SDL_SCANCODE_F10
-	ScanF11 ScanCode = C.SDL_SCANCODE_F11
-	ScanF12 ScanCode = C.SDL_SCANCODE_F12
+	ScanF1  Scancode = C.SDL_SCANCODE_F1
+	ScanF2  Scancode = C.SDL_SCANCODE_F2
+	ScanF3  Scancode = C.SDL_SCANCODE_F3
+	ScanF4  Scancode = C.SDL_SCANCODE_F4
+	ScanF5  Scancode = C.SDL_SCANCODE_F5
+	ScanF6  Scancode = C.SDL_SCANCODE_F6
+	ScanF7  Scancode = C.SDL_SCANCODE_F7
+	ScanF8  Scancode = C.SDL_SCANCODE_F8
+	ScanF9  Scancode = C.SDL_SCANCODE_F9
+	ScanF10 Scancode = C.SDL_SCANCODE_F10
+	ScanF11 Scancode = C.SDL_SCANCODE_F11
+	ScanF12 Scancode = C.SDL_SCANCODE_F12
 
-	ScanPrintScreen ScanCode = C.SDL_SCANCODE_PRINTSCREEN
-	ScanScrollLock  ScanCode = C.SDL_SCANCODE_SCROLLLOCK
-	ScanPause       ScanCode = C.SDL_SCANCODE_PAUSE
+	ScanPrintScreen Scancode = C.SDL_SCANCODE_PRINTSCREEN
+	ScanScrollLock  Scancode = C.SDL_SCANCODE_SCROLLLOCK
+	ScanPause       Scancode = C.SDL_SCANCODE_PAUSE
 	// insert on PC, help on some Mac keyboards (but does send code 73, not 117)
-	ScanInsert   ScanCode = C.SDL_SCANCODE_INSERT
-	ScanHome     ScanCode = C.SDL_SCANCODE_HOME
-	ScanPageUp   ScanCode = C.SDL_SCANCODE_PAGEUP
-	ScanDelete   ScanCode = C.SDL_SCANCODE_DELETE
-	ScanEnd      ScanCode = C.SDL_SCANCODE_END
-	ScanPageDown ScanCode = C.SDL_SCANCODE_PAGEDOWN
-	ScanRight    ScanCode = C.SDL_SCANCODE_RIGHT
-	ScanLeft     ScanCode = C.SDL_SCANCODE_LEFT
-	ScanDown     ScanCode = C.SDL_SCANCODE_DOWN
-	ScanUp       ScanCode = C.SDL_SCANCODE_UP
+	ScanInsert   Scancode = C.SDL_SCANCODE_INSERT
+	ScanHome     Scancode = C.SDL_SCANCODE_HOME
+	ScanPageUp   Scancode = C.SDL_SCANCODE_PAGEUP
+	ScanDelete   Scancode = C.SDL_SCANCODE_DELETE
+	ScanEnd      Scancode = C.SDL_SCANCODE_END
+	ScanPageDown Scancode = C.SDL_SCANCODE_PAGEDOWN
+	ScanRight    Scancode = C.SDL_SCANCODE_RIGHT
+	ScanLeft     Scancode = C.SDL_SCANCODE_LEFT
+	ScanDown     Scancode = C.SDL_SCANCODE_DOWN
+	ScanUp       Scancode = C.SDL_SCANCODE_UP
 
 	// num lock on PC, clear on Mac keyboards
-	ScanNumLockClear ScanCode = C.SDL_SCANCODE_NUMLOCKCLEAR
-	ScanNumDivide    ScanCode = C.SDL_SCANCODE_KP_DIVIDE
-	ScanNumMultiply  ScanCode = C.SDL_SCANCODE_KP_MULTIPLY
-	ScanNumMinus     ScanCode = C.SDL_SCANCODE_KP_MINUS
-	ScanNumPlus      ScanCode = C.SDL_SCANCODE_KP_PLUS
-	ScanNumEnter     ScanCode = C.SDL_SCANCODE_KP_ENTER
-	ScanNum1         ScanCode = C.SDL_SCANCODE_KP_1
-	ScanNum2         ScanCode = C.SDL_SCANCODE_KP_2
-	ScanNum3         ScanCode = C.SDL_SCANCODE_KP_3
-	ScanNum4         ScanCode = C.SDL_SCANCODE_KP_4
-	ScanNum5         ScanCode = C.SDL_SCANCODE_KP_5
-	ScanNum6         ScanCode = C.SDL_SCANCODE_KP_6
-	ScanNum7         ScanCode = C.SDL_SCANCODE_KP_7
-	ScanNum8         ScanCode = C.SDL_SCANCODE_KP_8
-	ScanNum9         ScanCode = C.SDL_SCANCODE_KP_9
-	ScanNum0         ScanCode = C.SDL_SCANCODE_KP_0
-	ScanNumPeriod    ScanCode = C.SDL_SCANCODE_KP_PERIOD
+	ScanNumLockClear Scancode = C.SDL_SCANCODE_NUMLOCKCLEAR
+	ScanNumDivide    Scancode = C.SDL_SCANCODE_KP_DIVIDE
+	ScanNumMultiply  Scancode = C.SDL_SCANCODE_KP_MULTIPLY
+	ScanNumMinus     Scancode = C.SDL_SCANCODE_KP_MINUS
+	ScanNumPlus      Scancode = C.SDL_SCANCODE_KP_PLUS
+	ScanNumEnter     Scancode = C.SDL_SCANCODE_KP_ENTER
+	ScanNum1         Scancode = C.SDL_SCANCODE_KP_1
+	ScanNum2         Scancode = C.SDL_SCANCODE_KP_2
+	ScanNum3         Scancode = C.SDL_SCANCODE_KP_3
+	ScanNum4         Scancode = C.SDL_SCANCODE_KP_4
+	ScanNum5         Scancode = C.SDL_SCANCODE_KP_5
+	ScanNum6         Scancode = C.SDL_SCANCODE_KP_6
+	ScanNum7         Scancode = C.SDL_SCANCODE_KP_7
+	ScanNum8         Scancode = C.SDL_SCANCODE_KP_8
+	ScanNum9         Scancode = C.SDL_SCANCODE_KP_9
+	ScanNum0         Scancode = C.SDL_SCANCODE_KP_0
+	ScanNumPeriod    Scancode = C.SDL_SCANCODE_KP_PERIOD
 
 	/*
 	   This is the additional key that ISO
@@ -175,166 +191,166 @@ const (
 	   in a Swiss German, German, or French
 	   layout.
 	*/
-	ScanNonUSBackSlash ScanCode = C.SDL_SCANCODE_NONUSBACKSLASH
+	ScanNonUSBackSlash Scancode = C.SDL_SCANCODE_NONUSBACKSLASH
 	// windows contextual menu, compose
-	ScanApplication ScanCode = C.SDL_SCANCODE_APPLICATION
+	ScanApplication Scancode = C.SDL_SCANCODE_APPLICATION
 	/*
 	   The USB document says this is a status flag,
 	   not a physical key - but some Mac keyboards
 	   do have a power key.
 	*/
-	ScanPower       ScanCode = C.SDL_SCANCODE_POWER
-	ScanNumEquals   ScanCode = C.SDL_SCANCODE_KP_EQUALS
-	ScanF13         ScanCode = C.SDL_SCANCODE_F13
-	ScanF14         ScanCode = C.SDL_SCANCODE_F14
-	ScanF15         ScanCode = C.SDL_SCANCODE_F15
-	ScanF16         ScanCode = C.SDL_SCANCODE_F16
-	ScanF17         ScanCode = C.SDL_SCANCODE_F17
-	ScanF18         ScanCode = C.SDL_SCANCODE_F18
-	ScanF19         ScanCode = C.SDL_SCANCODE_F19
-	ScanF20         ScanCode = C.SDL_SCANCODE_F20
-	ScanF21         ScanCode = C.SDL_SCANCODE_F21
-	ScanF22         ScanCode = C.SDL_SCANCODE_F22
-	ScanF23         ScanCode = C.SDL_SCANCODE_F23
-	ScanF24         ScanCode = C.SDL_SCANCODE_F24
-	ScanExecute     ScanCode = C.SDL_SCANCODE_EXECUTE
-	ScanHelp        ScanCode = C.SDL_SCANCODE_HELP
-	ScanMenu        ScanCode = C.SDL_SCANCODE_MENU
-	ScanSelect      ScanCode = C.SDL_SCANCODE_SELECT
-	ScanStop        ScanCode = C.SDL_SCANCODE_STOP
-	ScanAgain       ScanCode = C.SDL_SCANCODE_AGAIN
-	ScanUndo        ScanCode = C.SDL_SCANCODE_UNDO
-	ScanCut         ScanCode = C.SDL_SCANCODE_CUT
-	ScanCopy        ScanCode = C.SDL_SCANCODE_COPY
-	ScanPaste       ScanCode = C.SDL_SCANCODE_PASTE
-	ScanFind        ScanCode = C.SDL_SCANCODE_FIND
-	ScanMute        ScanCode = C.SDL_SCANCODE_MUTE
-	ScanVolumeUp    ScanCode = C.SDL_SCANCODE_VOLUMEUP
-	ScanVolumeDown  ScanCode = C.SDL_SCANCODE_VOLUMEDOWN
-	ScanNumComma    ScanCode = C.SDL_SCANCODE_KP_COMMA
-	ScanEqualsAS400 ScanCode = C.SDL_SCANCODE_KP_EQUALSAS400
+	ScanPower       Scancode = C.SDL_SCANCODE_POWER
+	ScanNumEquals   Scancode = C.SDL_SCANCODE_KP_EQUALS
+	ScanF13         Scancode = C.SDL_SCANCODE_F13
+	ScanF14         Scancode = C.SDL_SCANCODE_F14
+	ScanF15         Scancode = C.SDL_SCANCODE_F15
+	ScanF16         Scancode = C.SDL_SCANCODE_F16
+	ScanF17         Scancode = C.SDL_SCANCODE_F17
+	ScanF18         Scancode = C.SDL_SCANCODE_F18
+	ScanF19         Scancode = C.SDL_SCANCODE_F19
+	ScanF20         Scancode = C.SDL_SCANCODE_F20
+	ScanF21         Scancode = C.SDL_SCANCODE_F21
+	ScanF22         Scancode = C.SDL_SCANCODE_F22
+	ScanF23         Scancode = C.SDL_SCANCODE_F23
+	ScanF24         Scancode = C.SDL_SCANCODE_F24
+	ScanExecute     Scancode = C.SDL_SCANCODE_EXECUTE
+	ScanHelp        Scancode = C.SDL_SCANCODE_HELP
+	ScanMenu        Scancode = C.SDL_SCANCODE_MENU
+	ScanSelect      Scancode = C.SDL_SCANCODE_SELECT
+	ScanStop        Scancode = C.SDL_SCANCODE_STOP
+	ScanAgain       Scancode = C.SDL_SCANCODE_AGAIN
+	ScanUndo        Scancode = C.SDL_SCANCODE_UNDO
+	ScanCut         Scancode = C.SDL_SCANCODE_CUT
+	ScanCopy        Scancode = C.SDL_SCANCODE_COPY
+	ScanPaste       Scancode = C.SDL_SCANCODE_PASTE
+	ScanFind        Scancode = C.SDL_SCANCODE_FIND
+	ScanMute        Scancode = C.SDL_SCANCODE_MUTE
+	ScanVolumeUp    Scancode = C.SDL_SCANCODE_VOLUMEUP
+	ScanVolumeDown  Scancode = C.SDL_SCANCODE_VOLUMEDOWN
+	ScanNumComma    Scancode = C.SDL_SCANCODE_KP_COMMA
+	ScanEqualsAS400 Scancode = C.SDL_SCANCODE_KP_EQUALSAS400
 
 	// used on Asian keyboards, see footnotes in USB doc
-	ScanInternational1 ScanCode = C.SDL_SCANCODE_INTERNATIONAL1
-	ScanInternational2 ScanCode = C.SDL_SCANCODE_INTERNATIONAL2
+	ScanInternational1 Scancode = C.SDL_SCANCODE_INTERNATIONAL1
+	ScanInternational2 Scancode = C.SDL_SCANCODE_INTERNATIONAL2
 	// Yen
-	ScanInternational3 ScanCode = C.SDL_SCANCODE_INTERNATIONAL3
-	ScanInternational4 ScanCode = C.SDL_SCANCODE_INTERNATIONAL4
-	ScanInternational5 ScanCode = C.SDL_SCANCODE_INTERNATIONAL5
-	ScanInternational6 ScanCode = C.SDL_SCANCODE_INTERNATIONAL6
-	ScanInternational7 ScanCode = C.SDL_SCANCODE_INTERNATIONAL7
-	ScanInternational8 ScanCode = C.SDL_SCANCODE_INTERNATIONAL8
-	ScanInternational9 ScanCode = C.SDL_SCANCODE_INTERNATIONAL9
+	ScanInternational3 Scancode = C.SDL_SCANCODE_INTERNATIONAL3
+	ScanInternational4 Scancode = C.SDL_SCANCODE_INTERNATIONAL4
+	ScanInternational5 Scancode = C.SDL_SCANCODE_INTERNATIONAL5
+	ScanInternational6 Scancode = C.SDL_SCANCODE_INTERNATIONAL6
+	ScanInternational7 Scancode = C.SDL_SCANCODE_INTERNATIONAL7
+	ScanInternational8 Scancode = C.SDL_SCANCODE_INTERNATIONAL8
+	ScanInternational9 Scancode = C.SDL_SCANCODE_INTERNATIONAL9
 	// Hangul/English toggle
-	ScanLang1 ScanCode = C.SDL_SCANCODE_LANG1
+	ScanLang1 Scancode = C.SDL_SCANCODE_LANG1
 	// Hanja conversion
-	ScanLang2 ScanCode = C.SDL_SCANCODE_LANG2
+	ScanLang2 Scancode = C.SDL_SCANCODE_LANG2
 	// Katakana
-	ScanLang3 ScanCode = C.SDL_SCANCODE_LANG3
+	ScanLang3 Scancode = C.SDL_SCANCODE_LANG3
 	// Hiragana
-	ScanLang4 ScanCode = C.SDL_SCANCODE_LANG4
+	ScanLang4 Scancode = C.SDL_SCANCODE_LANG4
 	// Zenkaku/Hankaku
-	ScanLang5 ScanCode = C.SDL_SCANCODE_LANG5
+	ScanLang5 Scancode = C.SDL_SCANCODE_LANG5
 	// Erase-Eaze
-	ScanAlterase   ScanCode = C.SDL_SCANCODE_ALTERASE
-	ScanSysreq     ScanCode = C.SDL_SCANCODE_SYSREQ
-	ScanCancel     ScanCode = C.SDL_SCANCODE_CANCEL
-	ScanClear      ScanCode = C.SDL_SCANCODE_CLEAR
-	ScanPrior      ScanCode = C.SDL_SCANCODE_PRIOR
-	ScanReturn2    ScanCode = C.SDL_SCANCODE_RETURN2
-	ScanSeparator  ScanCode = C.SDL_SCANCODE_SEPARATOR
-	ScanOut        ScanCode = C.SDL_SCANCODE_OUT
-	ScanOper       ScanCode = C.SDL_SCANCODE_OPER
-	ScanClearAgain ScanCode = C.SDL_SCANCODE_CLEARAGAIN
-	ScanCrsel      ScanCode = C.SDL_SCANCODE_CRSEL
-	ScanExsel      ScanCode = C.SDL_SCANCODE_EXSEL
+	ScanAlterase   Scancode = C.SDL_SCANCODE_ALTERASE
+	ScanSysreq     Scancode = C.SDL_SCANCODE_SYSREQ
+	ScanCancel     Scancode = C.SDL_SCANCODE_CANCEL
+	ScanClear      Scancode = C.SDL_SCANCODE_CLEAR
+	ScanPrior      Scancode = C.SDL_SCANCODE_PRIOR
+	ScanReturn2    Scancode = C.SDL_SCANCODE_RETURN2
+	ScanSeparator  Scancode = C.SDL_SCANCODE_SEPARATOR
+	ScanOut        Scancode = C.SDL_SCANCODE_OUT
+	ScanOper       Scancode = C.SDL_SCANCODE_OPER
+	ScanClearAgain Scancode = C.SDL_SCANCODE_CLEARAGAIN
+	ScanCrsel      Scancode = C.SDL_SCANCODE_CRSEL
+	ScanExsel      Scancode = C.SDL_SCANCODE_EXSEL
 
-	Scan00                 ScanCode = C.SDL_SCANCODE_KP_00
-	Scan000                ScanCode = C.SDL_SCANCODE_KP_000
-	ScanThousandsSeparator ScanCode = C.SDL_SCANCODE_THOUSANDSSEPARATOR
-	ScanDecimalSeparator   ScanCode = C.SDL_SCANCODE_DECIMALSEPARATOR
-	ScanCurrencyUnit       ScanCode = C.SDL_SCANCODE_CURRENCYUNIT
-	ScanCurrencySubunit    ScanCode = C.SDL_SCANCODE_CURRENCYSUBUNIT
-	ScanLeftParen          ScanCode = C.SDL_SCANCODE_KP_LEFTPAREN
-	ScanRightParen         ScanCode = C.SDL_SCANCODE_KP_RIGHTPAREN
-	ScanLeftBrace          ScanCode = C.SDL_SCANCODE_KP_LEFTBRACE
-	ScanRightBrace         ScanCode = C.SDL_SCANCODE_KP_RIGHTBRACE
-	ScanNumTab             ScanCode = C.SDL_SCANCODE_KP_TAB
-	ScanNumBackspace       ScanCode = C.SDL_SCANCODE_KP_BACKSPACE
-	ScanNumA               ScanCode = C.SDL_SCANCODE_KP_A
-	ScanNumB               ScanCode = C.SDL_SCANCODE_KP_B
-	ScanNumC               ScanCode = C.SDL_SCANCODE_KP_C
-	ScanNumD               ScanCode = C.SDL_SCANCODE_KP_D
-	ScanNumE               ScanCode = C.SDL_SCANCODE_KP_E
-	ScanNumF               ScanCode = C.SDL_SCANCODE_KP_F
-	ScanXor                ScanCode = C.SDL_SCANCODE_KP_XOR
-	ScanNumPower           ScanCode = C.SDL_SCANCODE_KP_POWER
-	ScanPercent            ScanCode = C.SDL_SCANCODE_KP_PERCENT
-	ScanLess               ScanCode = C.SDL_SCANCODE_KP_LESS
-	ScanGreater            ScanCode = C.SDL_SCANCODE_KP_GREATER
-	ScanAmpersand          ScanCode = C.SDL_SCANCODE_KP_AMPERSAND
-	ScanDblAmpersand       ScanCode = C.SDL_SCANCODE_KP_DBLAMPERSAND
-	ScanVerticalBar        ScanCode = C.SDL_SCANCODE_KP_VERTICALBAR
-	ScanDblVerticalBar     ScanCode = C.SDL_SCANCODE_KP_DBLVERTICALBAR
-	ScanColon              ScanCode = C.SDL_SCANCODE_KP_COLON
-	ScanHash               ScanCode = C.SDL_SCANCODE_KP_HASH
-	ScanNumSpace           ScanCode = C.SDL_SCANCODE_KP_SPACE
-	ScanAt                 ScanCode = C.SDL_SCANCODE_KP_AT
-	ScanExclam             ScanCode = C.SDL_SCANCODE_KP_EXCLAM
-	ScanMemStore           ScanCode = C.SDL_SCANCODE_KP_MEMSTORE
-	ScanMemRecall          ScanCode = C.SDL_SCANCODE_KP_MEMRECALL
-	ScanMemClear           ScanCode = C.SDL_SCANCODE_KP_MEMCLEAR
-	ScanMemAdd             ScanCode = C.SDL_SCANCODE_KP_MEMADD
-	ScanMemSubtract        ScanCode = C.SDL_SCANCODE_KP_MEMSUBTRACT
-	ScanMemMultiply        ScanCode = C.SDL_SCANCODE_KP_MEMMULTIPLY
-	ScanMemDivide          ScanCode = C.SDL_SCANCODE_KP_MEMDIVIDE
-	ScanPlusMinus          ScanCode = C.SDL_SCANCODE_KP_PLUSMINUS
-	ScanNumClear           ScanCode = C.SDL_SCANCODE_KP_CLEAR
-	ScanClearEntry         ScanCode = C.SDL_SCANCODE_KP_CLEARENTRY
-	ScanBinary             ScanCode = C.SDL_SCANCODE_KP_BINARY
-	ScanOctal              ScanCode = C.SDL_SCANCODE_KP_OCTAL
-	ScanDecimal            ScanCode = C.SDL_SCANCODE_KP_DECIMAL
-	ScanHexadecimal        ScanCode = C.SDL_SCANCODE_KP_HEXADECIMAL
+	Scan00                 Scancode = C.SDL_SCANCODE_KP_00
+	Scan000                Scancode = C.SDL_SCANCODE_KP_000
+	ScanThousandsSeparator Scancode = C.SDL_SCANCODE_THOUSANDSSEPARATOR
+	ScanDecimalSeparator   Scancode = C.SDL_SCANCODE_DECIMALSEPARATOR
+	ScanCurrencyUnit       Scancode = C.SDL_SCANCODE_CURRENCYUNIT
+	ScanCurrencySubunit    Scancode = C.SDL_SCANCODE_CURRENCYSUBUNIT
+	ScanLeftParen          Scancode = C.SDL_SCANCODE_KP_LEFTPAREN
+	ScanRightParen         Scancode = C.SDL_SCANCODE_KP_RIGHTPAREN
+	ScanLeftBrace          Scancode = C.SDL_SCANCODE_KP_LEFTBRACE
+	ScanRightBrace         Scancode = C.SDL_SCANCODE_KP_RIGHTBRACE
+	ScanNumTab             Scancode = C.SDL_SCANCODE_KP_TAB
+	ScanNumBackspace       Scancode = C.SDL_SCANCODE_KP_BACKSPACE
+	ScanNumA               Scancode = C.SDL_SCANCODE_KP_A
+	ScanNumB               Scancode = C.SDL_SCANCODE_KP_B
+	ScanNumC               Scancode = C.SDL_SCANCODE_KP_C
+	ScanNumD               Scancode = C.SDL_SCANCODE_KP_D
+	ScanNumE               Scancode = C.SDL_SCANCODE_KP_E
+	ScanNumF               Scancode = C.SDL_SCANCODE_KP_F
+	ScanXor                Scancode = C.SDL_SCANCODE_KP_XOR
+	ScanNumPower           Scancode = C.SDL_SCANCODE_KP_POWER
+	ScanPercent            Scancode = C.SDL_SCANCODE_KP_PERCENT
+	ScanLess               Scancode = C.SDL_SCANCODE_KP_LESS
+	ScanGreater            Scancode = C.SDL_SCANCODE_KP_GREATER
+	ScanAmpersand          Scancode = C.SDL_SCANCODE_KP_AMPERSAND
+	ScanDblAmpersand       Scancode = C.SDL_SCANCODE_KP_DBLAMPERSAND
+	ScanVerticalBar        Scancode = C.SDL_SCANCODE_KP_VERTICALBAR
+	ScanDblVerticalBar     Scancode = C.SDL_SCANCODE_KP_DBLVERTICALBAR
+	ScanColon              Scancode = C.SDL_SCANCODE_KP_COLON
+	ScanHash               Scancode = C.SDL_SCANCODE_KP_HASH
+	ScanNumSpace           Scancode = C.SDL_SCANCODE_KP_SPACE
+	ScanAt                 Scancode = C.SDL_SCANCODE_KP_AT
+	ScanExclam             Scancode = C.SDL_SCANCODE_KP_EXCLAM
+	ScanMemStore           Scancode = C.SDL_SCANCODE_KP_MEMSTORE
+	ScanMemRecall          Scancode = C.SDL_SCANCODE_KP_MEMRECALL
+	ScanMemClear           Scancode = C.SDL_SCANCODE_KP_MEMCLEAR
+	ScanMemAdd             Scancode = C.SDL_SCANCODE_KP_MEMADD
+	ScanMemSubtract        Scancode = C.SDL_SCANCODE_KP_MEMSUBTRACT
+	ScanMemMultiply        Scancode = C.SDL_SCANCODE_KP_MEMMULTIPLY
+	ScanMemDivide          Scancode = C.SDL_SCANCODE_KP_MEMDIVIDE
+	ScanPlusMinus          Scancode = C.SDL_SCANCODE_KP_PLUSMINUS
+	ScanNumClear           Scancode = C.SDL_SCANCODE_KP_CLEAR
+	ScanClearEntry         Scancode = C.SDL_SCANCODE_KP_CLEARENTRY
+	ScanBinary             Scancode = C.SDL_SCANCODE_KP_BINARY
+	ScanOctal              Scancode = C.SDL_SCANCODE_KP_OCTAL
+	ScanDecimal            Scancode = C.SDL_SCANCODE_KP_DECIMAL
+	ScanHexadecimal        Scancode = C.SDL_SCANCODE_KP_HEXADECIMAL
 
-	ScanLCtrl  ScanCode = C.SDL_SCANCODE_LCTRL
-	ScanLShift ScanCode = C.SDL_SCANCODE_LSHIFT
-	ScanLAlt   ScanCode = C.SDL_SCANCODE_LALT
-	ScanLGui   ScanCode = C.SDL_SCANCODE_LGUI
-	ScanRCtrl  ScanCode = C.SDL_SCANCODE_RCTRL
-	ScanRShift ScanCode = C.SDL_SCANCODE_RSHIFT
-	ScanRAlt   ScanCode = C.SDL_SCANCODE_RALT
-	ScanRGui   ScanCode = C.SDL_SCANCODE_RGUI
+	ScanLCtrl  Scancode = C.SDL_SCANCODE_LCTRL
+	ScanLShift Scancode = C.SDL_SCANCODE_LSHIFT
+	ScanLAlt   Scancode = C.SDL_SCANCODE_LALT
+	ScanLGui   Scancode = C.SDL_SCANCODE_LGUI
+	ScanRCtrl  Scancode = C.SDL_SCANCODE_RCTRL
+	ScanRShift Scancode = C.SDL_SCANCODE_RSHIFT
+	ScanRAlt   Scancode = C.SDL_SCANCODE_RALT
+	ScanRGui   Scancode = C.SDL_SCANCODE_RGUI
 
 	// These values are mapped from usage page 0x0C (USB consumer page).
-	ScanAudioNext   ScanCode = C.SDL_SCANCODE_AUDIONEXT
-	ScanAudioPrev   ScanCode = C.SDL_SCANCODE_AUDIOPREV
-	ScanAudioStop   ScanCode = C.SDL_SCANCODE_AUDIOSTOP
-	ScanAudioPlay   ScanCode = C.SDL_SCANCODE_AUDIOPLAY
-	ScanAudioMute   ScanCode = C.SDL_SCANCODE_AUDIOMUTE
-	ScanMediaSelect ScanCode = C.SDL_SCANCODE_MEDIASELECT
-	ScanWww         ScanCode = C.SDL_SCANCODE_WWW
-	ScanMail        ScanCode = C.SDL_SCANCODE_MAIL
-	ScanCalculator  ScanCode = C.SDL_SCANCODE_CALCULATOR
-	ScanComputer    ScanCode = C.SDL_SCANCODE_COMPUTER
-	ScanSearch      ScanCode = C.SDL_SCANCODE_AC_SEARCH
-	ScanACHome      ScanCode = C.SDL_SCANCODE_AC_HOME
-	ScanBack        ScanCode = C.SDL_SCANCODE_AC_BACK
-	ScanForward     ScanCode = C.SDL_SCANCODE_AC_FORWARD
-	ScanACStop      ScanCode = C.SDL_SCANCODE_AC_STOP
-	ScanRefresh     ScanCode = C.SDL_SCANCODE_AC_REFRESH
-	ScanBookmarks   ScanCode = C.SDL_SCANCODE_AC_BOOKMARKS
+	ScanAudioNext   Scancode = C.SDL_SCANCODE_AUDIONEXT
+	ScanAudioPrev   Scancode = C.SDL_SCANCODE_AUDIOPREV
+	ScanAudioStop   Scancode = C.SDL_SCANCODE_AUDIOSTOP
+	ScanAudioPlay   Scancode = C.SDL_SCANCODE_AUDIOPLAY
+	ScanAudioMute   Scancode = C.SDL_SCANCODE_AUDIOMUTE
+	ScanMediaSelect Scancode = C.SDL_SCANCODE_MEDIASELECT
+	ScanWww         Scancode = C.SDL_SCANCODE_WWW
+	ScanMail        Scancode = C.SDL_SCANCODE_MAIL
+	ScanCalculator  Scancode = C.SDL_SCANCODE_CALCULATOR
+	ScanComputer    Scancode = C.SDL_SCANCODE_COMPUTER
+	ScanSearch      Scancode = C.SDL_SCANCODE_AC_SEARCH
+	ScanACHome      Scancode = C.SDL_SCANCODE_AC_HOME
+	ScanBack        Scancode = C.SDL_SCANCODE_AC_BACK
+	ScanForward     Scancode = C.SDL_SCANCODE_AC_FORWARD
+	ScanACStop      Scancode = C.SDL_SCANCODE_AC_STOP
+	ScanRefresh     Scancode = C.SDL_SCANCODE_AC_REFRESH
+	ScanBookmarks   Scancode = C.SDL_SCANCODE_AC_BOOKMARKS
 
 	// These are values that Christian Walther added (for mac keyboard?).
-	ScanBrightnessDown ScanCode = C.SDL_SCANCODE_BRIGHTNESSDOWN
-	ScanBrightnessUp   ScanCode = C.SDL_SCANCODE_BRIGHTNESSUP
+	ScanBrightnessDown Scancode = C.SDL_SCANCODE_BRIGHTNESSDOWN
+	ScanBrightnessUp   Scancode = C.SDL_SCANCODE_BRIGHTNESSUP
 	// display mirroring/dual display switch, video mode switch
-	ScanDisplaySwitch ScanCode = C.SDL_SCANCODE_DISPLAYSWITCH
-	ScanKbIllumToggle ScanCode = C.SDL_SCANCODE_KBDILLUMTOGGLE
-	ScanKbIllumDown   ScanCode = C.SDL_SCANCODE_KBDILLUMDOWN
-	ScanKbIllumUp     ScanCode = C.SDL_SCANCODE_KBDILLUMUP
-	ScanEject         ScanCode = C.SDL_SCANCODE_EJECT
-	ScanSleep         ScanCode = C.SDL_SCANCODE_SLEEP
+	ScanDisplaySwitch Scancode = C.SDL_SCANCODE_DISPLAYSWITCH
+	ScanKbIllumToggle Scancode = C.SDL_SCANCODE_KBDILLUMTOGGLE
+	ScanKbIllumDown   Scancode = C.SDL_SCANCODE_KBDILLUMDOWN
+	ScanKbIllumUp     Scancode = C.SDL_SCANCODE_KBDILLUMUP
+	ScanEject         Scancode = C.SDL_SCANCODE_EJECT
+	ScanSleep         Scancode = C.SDL_SCANCODE_SLEEP
 
-	ScanApp1 ScanCode = C.SDL_SCANCODE_APP1
-	ScanApp2 ScanCode = C.SDL_SCANCODE_APP2
+	ScanApp1 Scancode = C.SDL_SCANCODE_APP1
+	ScanApp2 Scancode = C.SDL_SCANCODE_APP2
 )
