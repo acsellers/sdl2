@@ -15,8 +15,11 @@ Complete:
   SDL_quit
   SDL_mouse
   SDL_rect
+  SDL_scancode
+  SDL_keycode
 
 In Progress:
+  SDL_keyboard [everything but current focus]
   SDL_surface [clip, convert, fill, stretch]
   SDL_video (window) [update_surface_rect]
   SDL_video (driver) [WINDOWPOS, Events, ClosestDisplayMode]
@@ -24,9 +27,6 @@ In Progress:
 To Start:
   SDL_mixer
   SDL_audio
-  SDL_keyboard
-  SDL_keycode
-  SDL_scancode
   SDL_gamecontroller
   SDL_joystick
   SDL_haptic
