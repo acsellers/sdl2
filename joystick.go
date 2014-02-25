@@ -2,31 +2,40 @@ package sdl2
 
 // #cgo LDFLAGS: -lSDL2
 // #include <SDL2/SDL_joystick.h>
+// #include <SDL2/SDL_gamecontroller.h>
 import "C"
 
 /*
 Unimplemented:
 GetGUIDString/FromString // WTF Hungarian
-SDL_JoystickEventState
 */
 func ConnectedJoysticks() []*Joystick {
 	n := int(C.SDL_NumJoysticks())
 	joys := make([]*Joystick, n)
 	for i, _ := range joys {
 		joys[i] = &Joystick{
-			Name:  C.GoString(C.SDL_JoystickNameForIndex(C.int(i))),
-			guid:  C.SDL_JoystickGetDeviceGUID(C.int(i)),
-			index: i,
+			Name:           C.GoString(C.SDL_JoystickNameForIndex(C.int(i))),
+			guid:           C.SDL_JoystickGetDeviceGUID(C.int(i)),
+			index:          i,
+			GameController: C.SDL_IsGameController(C.int(i)) == C.SDL_TRUE,
+		}
+		if joys[i].GameController {
+			cstr := C.SDL_GameControllerNameForIndex(C.int(i))
+			if cstr != nil {
+				joys[i].ControllerName = C.GoString(cstr)
+			}
 		}
 	}
 	return joys
 }
 
 type Joystick struct {
-	Native *C.SDL_Joystick
-	guid   C.SDL_JoystickGUID
-	index  int
-	Name   string
+	Native         *C.SDL_Joystick
+	guid           C.SDL_JoystickGUID
+	index          int
+	Name           string
+	ControllerName string
+	GameController bool
 }
 
 func (j *Joystick) Open() error {
@@ -37,6 +46,15 @@ func (j *Joystick) Open() error {
 	return nil
 }
 
+func (j *Joystick) OpenController() (*GameController, error) {
+	gc := C.SDL_GameControllerOpen(C.int(j.index))
+	if gc == nil {
+		return nil, GetError()
+	}
+
+	return &GameController{Native: gc, Parent: j}, nil
+}
+
 func (j *Joystick) Close() {
 	C.SDL_JoystickClose(j.Native)
 }
@@ -45,10 +63,10 @@ func (j *Joystick) Attached() bool {
 	return C.SDL_JoystickGetAttached(j.Native) == C.SDL_TRUE
 }
 
-func (j *Joystick) AcceptingEvents() bool {
+func (j *Joystick) EmittingEvents() bool {
 	return C.SDL_JoystickEventState(C.int(-1)) == C.SDL_TRUE
 }
-func (j *Joystick) SetAcceptEvents(active bool) {
+func (j *Joystick) SetEvents(active bool) {
 	var flag C.int
 	if active {
 		flag = 1
