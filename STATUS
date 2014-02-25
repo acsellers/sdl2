@@ -18,14 +18,13 @@ Complete:
   SDL_scancode
   SDL_keycode
   SDL_keyboard
+  SDL_joystick
 
 In Progress:
   SDL_surface [clip, convert, fill, stretch]
   SDL_video (window) [update_surface_rect]
   SDL_video (driver) [WINDOWPOS, Events, ClosestDisplayMode]
-  SDL_gamecontroller
-  SDL_joystick
-  SDL_haptic
+  SDL_gamecontroller [mapping, binding, values]
 
 To Start:
   SDL_mixer
@@ -34,6 +33,7 @@ To Start:
   SDL_events
   SDL_config
   SDL_hints
+  SDL_haptic
 
 Low Priority:
   SDL_loadso
