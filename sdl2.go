@@ -12,8 +12,9 @@ func init() {
 
 func GetError() error {
 	if cstr := C.SDL_GetError(); cstr != nil {
+		e := C.GoString(cstr)
 		C.SDL_ClearError()
-		return fmt.Errorf(C.GoString(cstr))
+		return fmt.Errorf(e)
 	}
 	return nil
 }

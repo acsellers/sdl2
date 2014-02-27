@@ -4,11 +4,13 @@ package sdl2
 // #include <SDL2/SDL_joystick.h>
 // #include <SDL2/SDL_gamecontroller.h>
 import "C"
+import
 
 /*
 Unimplemented:
 GetGUIDString/FromString // WTF Hungarian
-*/
+*/"fmt"
+
 func ConnectedJoysticks() []*Joystick {
 	n := int(C.SDL_NumJoysticks())
 	joys := make([]*Joystick, n)
@@ -36,13 +38,37 @@ type Joystick struct {
 	Name           string
 	ControllerName string
 	GameController bool
+	Axes           int
+	Trackballs     int
+	POVHats        int
+	Buttons        int
 }
+
+type HatPosition uint8
+
+const (
+	HatCentered  HatPosition = 0x0
+	HatUp        HatPosition = 0x1
+	HatRight     HatPosition = 0x2
+	HatDown      HatPosition = 0x4
+	HatLeft      HatPosition = 0x8
+	HatRightUp   HatPosition = HatRight | HatUp
+	HatRightDown HatPosition = HatRight | HatDown
+	HatLeftUp    HatPosition = HatLeft | HatUp
+	HatLeftDown  HatPosition = HatLeft | HatDown
+)
 
 func (j *Joystick) Open() error {
 	j.Native = C.SDL_JoystickOpen(C.int(j.index))
-	if j.Native != nil {
-		return GetError()
+	if j.Native == nil {
+		return fmt.Errorf("Joystick Open Error:%v", GetError())
 	}
+
+	j.Axes = int(C.SDL_JoystickNumAxes(j.Native))
+	j.Trackballs = int(C.SDL_JoystickNumBalls(j.Native))
+	j.POVHats = int(C.SDL_JoystickNumHats(j.Native))
+	j.Buttons = int(C.SDL_JoystickNumButtons(j.Native))
+
 	return nil
 }
 
@@ -73,16 +99,6 @@ func (j *Joystick) SetEvents(active bool) {
 	}
 	C.SDL_JoystickEventState(flag)
 }
-func (j *Joystick) Info() *JoystickInfo {
-	return &JoystickInfo{
-		Parent:     j,
-		Axes:       int(C.SDL_JoystickNumAxes(j.Native)),
-		Trackballs: int(C.SDL_JoystickNumBalls(j.Native)),
-		POVHats:    int(C.SDL_JoystickNumHats(j.Native)),
-		Buttons:    int(C.SDL_JoystickNumButtons(j.Native)),
-	}
-}
-
 func (j *Joystick) Update() {
 	C.SDL_JoystickUpdate()
 }
@@ -90,20 +106,6 @@ func (j *Joystick) Update() {
 func (j *Joystick) Axis(index int) int16 {
 	return int16(C.SDL_JoystickGetAxis(j.Native, C.int(index)))
 }
-
-type HatPosition uint8
-
-const (
-	HatCentered  HatPosition = 0x0
-	HatUp        HatPosition = 0x1
-	HatRight     HatPosition = 0x2
-	HatDown      HatPosition = 0x4
-	HatLeft      HatPosition = 0x8
-	HatRightUp   HatPosition = HatRight | HatUp
-	HatRightDown HatPosition = HatRight | HatDown
-	HatLeftUp    HatPosition = HatLeft | HatUp
-	HatLeftDown  HatPosition = HatLeft | HatDown
-)
 
 func (j *Joystick) Hat(index int) HatPosition {
 	return HatPosition(C.SDL_JoystickGetHat(j.Native, C.int(index)))
@@ -116,12 +118,4 @@ func (j *Joystick) Trackball(index int) (dx, dy int32) {
 
 func (j *Joystick) Button(index int) uint8 {
 	return uint8(C.SDL_JoystickGetButton(j.Native, C.int(index)))
-}
-
-type JoystickInfo struct {
-	Parent     *Joystick
-	Axes       int
-	Trackballs int
-	POVHats    int
-	Buttons    int
 }

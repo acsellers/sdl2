@@ -60,3 +60,61 @@ func (gc *GameController) SetEvents(active bool) {
 func (gc *GameController) Close() {
 	C.SDL_GameControllerClose(gc.Native)
 }
+
+func (gc *GameController) ButtonStatus(gcb GameControllerButton) uint8 {
+	return uint8(C.SDL_GameControllerGetButton(gc.Native, gcb.Native()))
+}
+
+func (gc *GameController) AxisStatus(gca GameControllerAxis) int16 {
+	return int16(C.SDL_GameControllerGetAxis(gc.Native, gca.Native()))
+}
+
+type GameControllerButton int
+
+func (gcb GameControllerButton) Native() C.SDL_GameControllerButton {
+	return C.SDL_GameControllerButton(gcb)
+}
+
+const (
+	ButtonA GameControllerButton = iota
+	ButtonB
+	ButtonX
+	ButtonY
+	ButtonBack
+	ButtonGuide
+	ButtonStart
+	ButtonLeftStick
+	ButtonRightStick
+	ButtonLeftShoulder
+	ButtonRightShoulder
+	ButtonDpadUp
+	ButtonDpadDown
+	ButtonDpadLeft
+	ButtonDpadRight
+	ButtonInvalid GameControllerButton = -1
+)
+
+type GameControllerAxis int
+
+func GameControllerAxisFromString(axis string) GameControllerAxis {
+	cstr := C.CString(axis)
+	defer C.free(unsafe.Pointer(cstr))
+	return GameControllerAxis(C.SDL_GameControllerGetAxisFromString(cstr))
+}
+
+const (
+	Invalid      GameControllerAxis = -1
+	LeftX        GameControllerAxis = C.SDL_CONTROLLER_AXIS_LEFTX
+	LeftY        GameControllerAxis = C.SDL_CONTROLLER_AXIS_LEFTY
+	RightX       GameControllerAxis = C.SDL_CONTROLLER_AXIS_RIGHTX
+	RightY       GameControllerAxis = C.SDL_CONTROLLER_AXIS_RIGHTY
+	TriggerLeft  GameControllerAxis = C.SDL_CONTROLLER_AXIS_TRIGGERLEFT
+	TriggerRight GameControllerAxis = C.SDL_CONTROLLER_AXIS_TRIGGERRIGHT
+)
+
+func (gca GameControllerAxis) Native() C.SDL_GameControllerAxis {
+	return C.SDL_GameControllerAxis(gca)
+}
+func (gca GameControllerAxis) String() string {
+	return C.GoString(C.SDL_GameControllerGetStringForAxis(gca.Native()))
+}
