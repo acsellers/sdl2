@@ -32,6 +32,12 @@ Get goimports from code.google.com/p/go.tools/cmd/goimports
 
 Get golint from github.com/golang/lint
 
+Images:
+This project uses images adapted or copied from the main Go distribution for examples.
+These images are available under the Creative Commons Attribution 3.0 License according
+to the golang.org. These images are found under the examples or games directories.
+
+
 License:
 Available under the BSD 2-Clause (LICENSE.bsd) or zlib (LICENSE.zlib). The main 
 difference between the licenses is that the BSD requires the copyright text be
