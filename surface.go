@@ -2,9 +2,11 @@ package sdl2
 
 // #cgo LDFLAGS: -lSDL2
 // #include <SDL2/SDL_surface.h>
+// #include <SDL2/SDL_render.h>
 import "C"
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"runtime"
@@ -47,11 +49,18 @@ const (
 
 type Surface struct {
 	Native        *C.SDL_Surface
+	Source        *image.RGBA
+	textures      []texture
 	Width, Height int
 	Stride        int // SDL calls it pitch, but in go's image library it's stride
 	Pixels        []byte
 	clip          C.SDL_Rect
 	rle           bool
+}
+
+type texture struct {
+	texture *C.SDL_Texture
+	window  *Window
 }
 
 func NewSurfaceFromImage(i *image.RGBA) *Surface {
@@ -67,9 +76,11 @@ func NewSurfaceFromImage(i *image.RGBA) *Surface {
 			0x00ff0000,
 			0xff000000,
 		),
+		Source: i,
 		Width:  i.Rect.Dx(),
 		Height: i.Rect.Dy(),
 	}
+	s.SaveToBMP("native.bmp")
 	runtime.SetFinalizer(s, (*Surface).Free)
 
 	return s
@@ -189,12 +200,7 @@ func (s *Surface) BlitSubset(d *Surface, dst image.Point, subset image.Rectangle
 	dr := C.SDL_Rect{x: C.int(dst.X), y: C.int(dst.Y)}
 	r := C.SDL_BlitSurface(
 		s.Native,
-		&C.SDL_Rect{
-			x: C.int(subset.Min.X),
-			y: C.int(subset.Min.Y),
-			w: C.int(subset.Dx()),
-			h: C.int(subset.Dy()),
-		},
+		RectToNative(subset),
 		d.Native,
 		&dr,
 	)
@@ -204,47 +210,66 @@ func (s *Surface) BlitSubset(d *Surface, dst image.Point, subset image.Rectangle
 	return image.Rect(int(dr.x), int(dr.y), int(dr.x+dr.w), int(dr.y+dr.h)), nil
 }
 
-func (s *Surface) BlitScaled(d *Surface, dst image.Rectangle) (image.Rectangle, error) {
-	dr := C.SDL_Rect{
-		x: C.int(dst.Min.X),
-		y: C.int(dst.Min.Y),
-		w: C.int(dst.Dx()),
-		h: C.int(dst.Dy()),
-	}
+func (s *Surface) BlitScaled(d *Surface, dst image.Rectangle) error {
 	r := C.SDL_BlitSurface(
 		s.Native,
 		nil,
 		d.Native,
-		&dr,
+		RectToNative(dst),
 	)
 	if r != 0 {
-		return image.Rectangle{}, GetError()
+		return GetError()
 	}
-	return image.Rect(int(dr.x), int(dr.y), int(dr.x+dr.w), int(dr.y+dr.h)), nil
+	return nil
 }
 
-func (s *Surface) BlitScaledSubset(d *Surface, dst, subset image.Rectangle) (image.Rectangle, error) {
-	dr := C.SDL_Rect{
-		x: C.int(dst.Min.X),
-		y: C.int(dst.Min.Y),
-		w: C.int(dst.Dx()),
-		h: C.int(dst.Dy()),
-	}
-
+func (s *Surface) BlitScaledSubset(d *Surface, dst, subset image.Rectangle) error {
+	// TODO: what is this?
 	r := C.SDL_BlitSurface(
 		s.Native,
-		&C.SDL_Rect{
-			x: C.int(subset.Min.X),
-			y: C.int(subset.Min.Y),
-			w: C.int(subset.Dx()),
-			h: C.int(subset.Dy()),
-		},
+		RectToNative(subset),
 		d.Native,
-		&dr,
+		RectToNative(dst),
 	)
 	if r != 0 {
-		return image.Rectangle{}, GetError()
+		return GetError()
 	}
-	return image.Rect(int(dr.x), int(dr.y), int(dr.x+dr.w), int(dr.y+dr.h)), nil
+	return nil
 
+}
+
+func (s *Surface) Texture(w *Window) *C.SDL_Texture {
+	for _, t := range s.textures {
+		if t.window == w {
+			return t.texture
+		}
+	}
+
+	tex := C.SDL_CreateTextureFromSurface(w.Renderer, s.Native)
+	fmt.Println(tex == nil)
+	s.textures = append(s.textures, texture{tex, w})
+	return tex
+}
+
+func (s *Surface) RegenTexture(w *Window) *C.SDL_Texture {
+	tex := C.SDL_CreateTextureFromSurface(w.Renderer, s.Native)
+	for _, t := range s.textures {
+		if t.window == w {
+			C.SDL_DestroyTexture(t.texture)
+			t.texture = tex
+			return tex
+		}
+	}
+
+	s.textures = append(s.textures, texture{tex, w})
+	return tex
+}
+
+func (s *Surface) NativeClipping() *C.SDL_Rect {
+	return &C.SDL_Rect{
+		x: 0,
+		y: 0,
+		w: C.int(s.Width),
+		h: C.int(s.Height),
+	}
 }

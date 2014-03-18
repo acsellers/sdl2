@@ -8,6 +8,25 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"time"
+)
+
+type Event interface {
+	Type() EventType
+	Since() time.Duration
+	String() string
+}
+
+type EventType int
+
+const (
+	EventUnknown EventType = iota
+	EventController
+	EventJoystick
+	EventKeyboard
+	EventMouse
+	EventWindow
+	EventTick
 )
 
 type Keysym struct {
@@ -51,5 +70,74 @@ func pollEvents() {
 			binary.Read(buf, binary.LittleEndian, &i)
 			fmt.Printf("Event type: %x\n", i)
 		}
+	}
+}
+
+var (
+	EventTimeout = 1000 // Milliseconds
+	EventSlop    = 100  // Milliseconds
+)
+var (
+	EventBus       chan Event
+	internalEvents chan Event
+)
+
+func EventPoller() {
+	if EventBus == nil {
+		EventBus = make(chan Event)
+		internalEvents = make(chan Event)
+	} else {
+		return
+	}
+
+	queue := make([]Event, 16)
+	var ev Event
+	var timeout <-chan time.Time
+EventLoop:
+	for {
+		if len(queue) == 0 {
+			select {
+			case <-time.After(time.Duration(EventTimeout) * time.Millisecond):
+				queue = append(queue, NewTickEvent())
+			case ev = <-internalEvents:
+				queue = append(queue, ev)
+			}
+		}
+		timeout = time.After(time.Duration(EventTimeout+EventSlop)*time.Millisecond - queue[0].Since())
+		select {
+		case EventBus <- queue[0]:
+			queue = queue[1:]
+		case ev = <-internalEvents:
+			queue = append(queue, ev)
+		case <-timeout:
+			for i, qe := range queue {
+				if qe.Since() < time.Duration(EventTimeout)*time.Millisecond {
+					queue = queue[i:]
+					continue EventLoop
+				}
+			}
+		}
+	}
+}
+
+type TickEvent struct {
+	generated time.Time
+}
+
+func (te TickEvent) Type() EventType {
+	return EventTick
+}
+
+func (te TickEvent) String() string {
+	return fmt.Sprintf("Tick Event generated %s ago", time.Since(te.generated))
+}
+
+func (te TickEvent) Since() time.Duration {
+	return time.Since(te.generated)
+}
+
+func NewTickEvent() Event {
+	return TickEvent{
+		generated: time.Now(),
 	}
 }

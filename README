@@ -37,6 +37,10 @@ This project uses images adapted or copied from the main Go distribution for exa
 These images are available under the Creative Commons Attribution 3.0 License according
 to the golang.org. These images are found under the examples or games directories.
 
+Tiling backgrounds and some images are built from assets from subtlepatterns.com.
+
+Fonts used in images are: Hallo sans, 
+
 
 License:
 Available under the BSD 2-Clause (LICENSE.bsd) or zlib (LICENSE.zlib). The main 

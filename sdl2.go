@@ -4,10 +4,13 @@ package sdl2
 // #include <SDL2/SDL_error.h>
 // #include <SDL2/SDL.h>
 import "C"
-import "fmt"
+import (
+	"fmt"
+	"image"
+)
 
 func init() {
-	C.SDL_Init(C.SDL_INIT_EVERYTHING)
+	C.SDL_Init(C.SDL_INIT_VIDEO)
 }
 
 func GetError() error {
@@ -21,4 +24,13 @@ func GetError() error {
 
 func Quit() {
 	C.SDL_Quit()
+}
+
+func RectToNative(r image.Rectangle) *C.SDL_Rect {
+	return &C.SDL_Rect{
+		x: C.int(r.Min.X),
+		y: C.int(r.Min.Y),
+		w: C.int(r.Dx()),
+		h: C.int(r.Dy()),
+	}
 }

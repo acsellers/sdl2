@@ -26,13 +26,8 @@ func EnclosePoints(clipping image.Rectangle, pts []image.Point) (bool, image.Rec
 		cpts[i].x, cpts[i].y = C.int(pt.X), C.int(pt.Y)
 	}
 	clipping.Canon()
-	cr := &C.SDL_Rect{
-		C.int(clipping.Min.X),
-		C.int(clipping.Min.Y),
-		C.int(clipping.Dx()),
-		C.int(clipping.Dy()),
-	}
-	b := C.SDL_EnclosePoints(&cpts[0], C.int(len(cpts)), cr, &r)
+
+	b := C.SDL_EnclosePoints(&cpts[0], C.int(len(cpts)), RectToNative(clipping), &r)
 	er := image.Rect(int(r.x), int(r.y), int(r.x+r.w), int(r.y+r.h))
 	if b == C.SDL_TRUE {
 		return true, er
@@ -46,16 +41,10 @@ func EnclosePoints(clipping image.Rectangle, pts []image.Point) (bool, image.Rec
 // rectangle, this will return false and two zero points as ca and cb.
 func IntersectRectAndLine(r image.Rectangle, a, b image.Point) (inside bool, ca, cb image.Point) {
 	r.Canon()
-	sr := C.SDL_Rect{
-		x: C.int(r.Min.X),
-		y: C.int(r.Min.Y),
-		w: C.int(r.Dx()),
-		h: C.int(r.Dy()),
-	}
 	var ax, bx, ay, by C.int
 	ax, ay = C.int(a.X), C.int(a.Y)
 	bx, by = C.int(b.X), C.int(b.Y)
-	cbool := C.SDL_IntersectRectAndLine(&sr, &ax, &ay, &bx, &by)
+	cbool := C.SDL_IntersectRectAndLine(RectToNative(r), &ax, &ay, &bx, &by)
 	inside = cbool == C.SDL_TRUE
 	if inside {
 		ca = image.Point{int(ax), int(ay)}

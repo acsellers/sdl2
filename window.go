@@ -3,14 +3,20 @@ package sdl2
 // #cgo LDFLAGS: -lSDL2
 // #include <SDL2/SDL_video.h>
 // #include <SDL2/SDL_keyboard.h>
+// #include <SDL2/SDL_render.h>
 import "C"
 import (
+	"fmt"
+	"image"
 	"runtime"
+	"time"
 	"unsafe"
 )
 
 type Window struct {
-	Native *C.SDL_Window
+	Native   *C.SDL_Window
+	Renderer *C.SDL_Renderer
+	Screen   func()
 }
 
 /*
@@ -31,6 +37,9 @@ GL_SwapWindow
 GL_DeleteContext
 */
 type WindowFlags struct {
+	// Whether the Window uses the Renderer API for acceleration
+	Renderer bool
+
 	// Flags available in NewWindow
 	Fullscreen bool
 	Borderless bool
@@ -40,8 +49,6 @@ type WindowFlags struct {
 	Resizable  bool
 	Grabbed    bool
 	OpenGL     bool
-	// Useful with NewWindowAndRenderer
-	FullscreenDesktop bool
 
 	// Flags availble from Flags() function
 	InputFocus bool
@@ -74,22 +81,44 @@ func (wf WindowFlags) toUint32() C.Uint32 {
 	if wf.OpenGL {
 		flags |= C.SDL_WINDOW_OPENGL
 	}
-	if wf.FullscreenDesktop {
+	if wf.Fullscreen && wf.Renderer {
 		flags |= C.SDL_WINDOW_FULLSCREEN_DESKTOP
 	}
 	return flags
 }
 
 func NewWindow(title string, x, y, w, h int, f WindowFlags) (*Window, error) {
-	tstr := C.CString(title)
-	defer C.free(unsafe.Pointer(tstr))
+	rw := &Window{}
+	initialized := make(chan error)
+	go func() {
+		runtime.LockOSThread()
+		tstr := C.CString(title)
+		defer C.free(unsafe.Pointer(tstr))
 
-	nw := (*C.SDL_Window)(C.SDL_CreateWindow(tstr, C.int(x), C.int(y), C.int(w), C.int(h), f.toUint32()))
-	if nw == nil {
-		return nil, GetError()
-	}
+		rw.Native = (*C.SDL_Window)(C.SDL_CreateWindow(tstr, C.int(x), C.int(y), C.int(w), C.int(h), f.toUint32()))
+		if rw.Native == nil {
+			initialized <- GetError()
+			return
+		}
 
-	return &Window{Native: nw}, nil
+		if f.Renderer {
+			rw.Renderer = C.SDL_CreateRenderer(rw.Native, -1, C.SDL_RENDERER_ACCELERATED|C.SDL_RENDERER_PRESENTVSYNC)
+			if rw.Renderer == nil {
+				initialized <- GetError()
+				return
+			}
+		}
+		initialized <- nil
+		for {
+			if rw.Screen == nil {
+				time.Sleep(10 * time.Millisecond)
+				continue
+			}
+			rw.Screen()
+		}
+	}()
+
+	return rw, <-initialized
 }
 
 // Destroy terminates a window, closes the window, it becomes an ex-window
@@ -326,6 +355,42 @@ func (w *Window) Surface() *Surface {
 // content in the window.
 func (w *Window) FlipSurface() error {
 	if C.SDL_UpdateWindowSurface(w.Native) != 0 {
+		return GetError()
+	}
+	return nil
+}
+
+func (w *Window) Present() {
+	C.SDL_RenderPresent(w.Renderer)
+}
+
+func (w *Window) RendererSize() (width, height int32) {
+	C.SDL_RenderGetLogicalSize(w.Renderer, (*C.int)(&width), (*C.int)(&height))
+	return
+}
+func (w *Window) SetRendererSize(width, height int) error {
+	if C.SDL_RenderSetLogicalSize(w.Renderer, C.int(width), C.int(height)) != 0 {
+		return GetError()
+	}
+	return nil
+}
+
+func (w *Window) RenderSurface(s *Surface, r image.Rectangle) error {
+	if C.SDL_RenderCopy(w.Renderer, s.Texture(w), s.NativeClipping(), RectToNative(r)) != 0 {
+		fmt.Println("RenderCopyError")
+		return GetError()
+	}
+	return nil
+}
+
+func (w *Window) RenderBackground(s *Surface) error {
+	C.SDL_SetRenderDrawColor(w.Renderer, C.Uint8(0xff), C.Uint8(0), C.Uint8(0), C.Uint8(0xff))
+	e := C.SDL_RenderClear(w.Renderer)
+	if e != 0 {
+		fmt.Println(GetError())
+	}
+	if C.SDL_RenderCopy(w.Renderer, s.Texture(w), nil, nil) != 0 {
+		fmt.Println("RenderCopyError")
 		return GetError()
 	}
 	return nil
