@@ -60,6 +60,7 @@ func WatchEvents() {
 }
 
 func pollEvents() {
+	fmt.Println("Polling for Events")
 	var event C.SDL_Event
 	var e C.int
 	for {
@@ -83,6 +84,7 @@ var (
 )
 
 func EventPoller() {
+	go pollEvents()
 	if EventBus == nil {
 		EventBus = make(chan Event)
 		internalEvents = make(chan Event)
@@ -90,8 +92,9 @@ func EventPoller() {
 		return
 	}
 
-	queue := make([]Event, 16)
+	queue := make([]Event, 0, 16)
 	var ev Event
+	var d time.Duration
 	var timeout <-chan time.Time
 EventLoop:
 	for {
@@ -103,7 +106,9 @@ EventLoop:
 				queue = append(queue, ev)
 			}
 		}
-		timeout = time.After(time.Duration(EventTimeout+EventSlop)*time.Millisecond - queue[0].Since())
+
+		d = time.Duration(EventTimeout+EventSlop)*time.Millisecond - queue[0].Since()
+		timeout = time.After(d)
 		select {
 		case EventBus <- queue[0]:
 			queue = queue[1:]

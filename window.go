@@ -118,7 +118,11 @@ func NewWindow(title string, x, y, w, h int, f WindowFlags) (*Window, error) {
 		}
 	}()
 
-	return rw, <-initialized
+	err := <-initialized
+	if err == nil {
+		go EventPoller()
+	}
+	return rw, err
 }
 
 // Destroy terminates a window, closes the window, it becomes an ex-window

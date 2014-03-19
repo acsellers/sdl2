@@ -13,44 +13,28 @@ import (
 
 func SetupMenu() *gui.Screen {
 	return &gui.Screen{
-		Setup: func(s *gui.Screen) {
-			s.Background = MenuBackground()
-			s.Items = []gui.Drawable{MenuTitle()}
-		},
+		Background: MenuBackground(),
+		Items:      []gui.Drawable{MenuTitle()},
 	}
 }
 
 func MenuBackground() gui.Drawable {
 	img := ConvertImage(GetImage("background.png"))
 	surf := sdl2.NewSurfaceFromImage(img)
-	return &SurfaceDrawer{
-		S:    surf,
-		Rect: image.Rect(0, 0, 1024, 768),
+	fmt.Println("background")
+	return &gui.Background{
+		S: surf,
 	}
 }
 
 func MenuTitle() gui.Drawable {
 	img := ConvertImage(GetImage("title.png"))
 	surf := sdl2.NewSurfaceFromImage(img)
-	surf.SaveToBMP("test.bmp")
-	return &SurfaceDrawer{
-		S:    surf,
-		Rect: image.Rect(366, 80, 366+img.Bounds().Dx(), 80+img.Bounds().Dy()),
+	fmt.Println("title")
+	return &gui.StaticSurface{
+		S:         surf,
+		Placement: image.Rect(366, 80, 366+img.Bounds().Dx(), 80+img.Bounds().Dy()),
 	}
-}
-
-type SurfaceDrawer struct {
-	S      *sdl2.Surface
-	Rect   image.Rectangle
-	Active image.Rectangle
-}
-
-func (sd *SurfaceDrawer) Draw() (*sdl2.Surface, image.Rectangle) {
-	return sd.S, sd.Rect
-}
-
-func (sd *SurfaceDrawer) ActiveArea() image.Rectangle {
-	return sd.Active
 }
 
 func GetImage(name string) image.Image {

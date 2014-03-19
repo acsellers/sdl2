@@ -6,7 +6,6 @@ package sdl2
 import "C"
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"runtime"
@@ -246,7 +245,6 @@ func (s *Surface) Texture(w *Window) *C.SDL_Texture {
 	}
 
 	tex := C.SDL_CreateTextureFromSurface(w.Renderer, s.Native)
-	fmt.Println(tex == nil)
 	s.textures = append(s.textures, texture{tex, w})
 	return tex
 }

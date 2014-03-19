@@ -1,44 +1,41 @@
 package gui
 
 import (
-	"fmt"
 	"image"
 
 	"github.com/acsellers/sdl2"
 )
 
 type Screen struct {
-	Background  Drawable
-	Items       []Drawable
-	ActiveItems []Clickable
-	Window      *sdl2.Window
-	Draw        func()
-	Setup       func(*Screen)
-	done        chan bool
+	Background    Drawable
+	Items         []Drawable
+	ActiveItems   []Clickable
+	Window        *sdl2.Window
+	AlternateDraw func()
+	Setup         func(*sdl2.Window)
+	done          chan bool
 }
 
-func (s *Screen) SetWindow(w *sdl2.Window) {
+func (s *Screen) Start(w *sdl2.Window) {
 	s.Window = w
-}
 
-func (s *Screen) Start() {
-	if s.Draw != nil {
+	if s.AlternateDraw != nil {
 		s.Window.Screen = func() {
-			s.Draw()
+			s.AlternateDraw()
 			s.Window.Present()
 		}
 	} else {
-		s.Setup(s)
+		if s.Setup != nil {
+			s.Setup(s.Window)
+		}
 		s.Window.Screen = func() {
 			for {
-				sf, r := s.Background.Draw()
-				e := s.Window.RenderSurface(sf, r)
-				if e != nil {
-					fmt.Println(e)
-				}
+				s.Background.Draw(s.Window)
 				for _, d := range s.Items {
-					sf, r := d.Draw()
-					s.Window.RenderSurface(sf, r)
+					d.Draw(s.Window)
+				}
+				for _, ai := range s.ActiveItems {
+					ai.Draw(s.Window)
 				}
 				s.Window.Present()
 			}
@@ -51,12 +48,29 @@ func (s *Screen) Stop() {
 }
 
 type Drawable interface {
-	Draw() (*sdl2.Surface, image.Rectangle)
-	ActiveArea() image.Rectangle
+	Draw(*sdl2.Window)
+}
+
+type Background struct {
+	S *sdl2.Surface
+}
+
+func (b *Background) Draw(w *sdl2.Window) {
+	w.RenderBackground(b.S)
+}
+
+type StaticSurface struct {
+	S         *sdl2.Surface
+	Placement image.Rectangle
+}
+
+func (ss *StaticSurface) Draw(w *sdl2.Window) {
+	w.RenderSurface(ss.S, ss.Placement)
 }
 
 type Clickable interface {
 	Drawable
+	ActiveArea() image.Rectangle
 	Activate()
 }
 
