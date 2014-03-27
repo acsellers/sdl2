@@ -35,7 +35,8 @@ Get golint from github.com/golang/lint
 Images:
 This project uses images adapted or copied from the main Go distribution for examples.
 These images are available under the Creative Commons Attribution 3.0 License according
-to the golang.org. These images are found under the examples or games directories.
+to the golang.org. These images are found under the examples or games directories. The images
+were created by Renee French. For more information read http://blog.golang.org/gopher
 
 Tiling backgrounds and some images are built from assets from subtlepatterns.com.
 
